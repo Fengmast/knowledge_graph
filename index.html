@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>高中物理选择性必修2知识图谱总览</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Microsoft YaHei', Arial, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 40px 20px;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        
+        h1 {
+            text-align: center;
+            color: white;
+            font-size: 2.5em;
+            margin-bottom: 20px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+        
+        .subtitle {
+            text-align: center;
+            color: rgba(255,255,255,0.9);
+            font-size: 1.2em;
+            margin-bottom: 50px;
+        }
+        
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 30px;
+            margin-top: 40px;
+        }
+        
+        .card {
+            background: white;
+            border-radius: 15px;
+            padding: 30px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            cursor: pointer;
+        }
+        
+        .card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 15px 40px rgba(0,0,0,0.4);
+        }
+        
+        .card-header {
+            display: flex;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+        
+        .card-icon {
+            width: 50px;
+            height: 50px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 24px;
+            font-weight: bold;
+            margin-right: 15px;
+        }
+        
+        .card-title {
+            font-size: 1.5em;
+            color: #333;
+            font-weight: bold;
+        }
+        
+        .card-description {
+            color: #666;
+            line-height: 1.6;
+            margin-bottom: 20px;
+        }
+        
+        .card-button {
+            display: inline-block;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 12px 30px;
+            border-radius: 25px;
+            text-decoration: none;
+            font-weight: bold;
+            transition: all 0.3s ease;
+        }
+        
+        .card-button:hover {
+            transform: scale(1.05);
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+        }
+        
+        .info-box {
+            background: rgba(255,255,255,0.2);
+            backdrop-filter: blur(10px);
+            border-radius: 15px;
+            padding: 25px;
+            margin-bottom: 40px;
+            color: white;
+        }
+        
+        .info-box h2 {
+            margin-bottom: 15px;
+            font-size: 1.5em;
+        }
+        
+        .info-box ul {
+            list-style: none;
+            padding-left: 0;
+        }
+        
+        .info-box li {
+            padding: 8px 0;
+            padding-left: 25px;
+            position: relative;
+        }
+        
+        .info-box li:before {
+            content: "✓";
+            position: absolute;
+            left: 0;
+            color: #4ECDC4;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>📚 高中物理选择性必修2知识图谱</h1>
+        <p class="subtitle">2019年版教材 - 五个版本完整知识结构可视化</p>
+        
+        <div class="info-box">
+            <h2>📖 关于知识图谱</h2>
+            <ul>
+                <li>展示了教材的层次化知识结构：教材 → 章节 → 小节 → 知识点</li>
+                <li>可以拖动节点调整布局，点击节点查看详细信息</li>
+                <li>不同颜色代表不同层级：红色(教材) → 青色(章) → 绿色(节) → 粉色(知识点)</li>
+                <li>支持缩放和拖拽，方便探索完整知识网络</li>
+            </ul>
+        </div>
+        
+        <div class="grid">
+            <div class="card" onclick="window.open('知识图谱_新人教版选择性必修二.html', '_blank')">
+                <div class="card-header">
+                    <div class="card-icon">1</div>
+                    <div class="card-title">新人教版</div>
+                </div>
+                <div class="card-description">
+                    人民教育出版社编写的选择性必修2教材知识图谱，包含安培力、洛伦兹力、电磁感应、交变电流、电磁波等核心内容。
+                </div>
+                <a href="知识图谱_新人教版选择性必修二.html" class="card-button" target="_blank">查看图谱 →</a>
+            </div>
+            
+            <div class="card" onclick="window.open('知识图谱_沪科技版选择性必修二.html', '_blank')">
+                <div class="card-header">
+                    <div class="card-icon">2</div>
+                    <div class="card-title">沪科技版</div>
+                </div>
+                <div class="card-description">
+                    上海科学技术出版社编写的选择性必修2教材知识图谱，强调科技应用与物理原理的结合。
+                </div>
+                <a href="知识图谱_沪科技版选择性必修二.html" class="card-button" target="_blank">查看图谱 →</a>
+            </div>
+            
+            <div class="card" onclick="window.open('知识图谱_教科版选择性必修二.html', '_blank')">
+                <div class="card-header">
+                    <div class="card-icon">3</div>
+                    <div class="card-title">教科版</div>
+                </div>
+                <div class="card-description">
+                    教育科学出版社编写的选择性必修2教材知识图谱，注重实验探究和科学方法的培养。
+                </div>
+                <a href="知识图谱_教科版选择性必修二.html" class="card-button" target="_blank">查看图谱 →</a>
+            </div>
+            
+            <div class="card" onclick="window.open('知识图谱_粤教版选择性必修二.html', '_blank')">
+                <div class="card-header">
+                    <div class="card-icon">4</div>
+                    <div class="card-title">粤教版</div>
+                </div>
+                <div class="card-description">
+                    广东教育出版社编写的选择性必修2教材知识图谱，结合地方特色与现代技术应用。
+                </div>
+                <a href="知识图谱_粤教版选择性必修二.html" class="card-button" target="_blank">查看图谱 →</a>
+            </div>
+            
+            <div class="card" onclick="window.open('知识图谱_鲁教版选择性必修二.html', '_blank')">
+                <div class="card-header">
+                    <div class="card-icon">5</div>
+                    <div class="card-title">鲁教版</div>
+                </div>
+                <div class="card-description">
+                    山东教育出版社编写的选择性必修2教材知识图谱，注重知识的系统性和应用性。
+                </div>
+                <a href="知识图谱_鲁教版选择性必修二.html" class="card-button" target="_blank">查看图谱 →</a>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
