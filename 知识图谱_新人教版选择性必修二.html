@@ -100,7 +100,64 @@
                   // adding nodes and edges to the graph
                   data = {nodes: nodes, edges: edges};
 
-                  var options = {"physics": {"enabled": false}, "interaction": {"dragNodes": true, "dragView": true, "zoomView": true}, "nodes": {"font": {"size": 36, "face": "MicrosoftYaHei", "bold": true}, "margin": 25, "borderWidth": 3}, "edges": {"smooth": {"type": "continuous", "roundness": 0.5}}, "layout": {"randomSeed": 42, "improvedLayout": true, "hierarchical": {"enabled": false}}};
+                  var options = {
+                      "physics": {
+                          "enabled": true,
+                          "barnesHut": {
+                              "gravitationalConstant": -25000,
+                              "centralGravity": 0.05,
+                              "springLength": 500,
+                              "springConstant": 0.005,
+                              "damping": 0.3,
+                              "avoidOverlap": 1
+                          },
+                          "stabilization": {
+                              "enabled": true,
+                              "iterations": 5000
+                          }
+                      },
+                      "interaction": {
+                          "dragNodes": true,
+                          "dragView": true,
+                          "zoomView": true
+                      },
+                      "nodes": {
+                          "font": {
+                              "size": 48,
+                              "face": "MicrosoftYaHei",
+                              "bold": true
+                          },
+                          "margin": 50,
+                          "borderWidth": 3,
+                          "widthConstraint": {
+                              "minimum": 200,
+                              "maximum": 500
+                          },
+                          "heightConstraint": {
+                              "minimum": 80
+                          },
+                          "size": 30,
+                          "scaling": {
+                              "label": {
+                                  "enabled": false
+                              }
+                          }
+                      },
+                      "edges": {
+                          "smooth": {
+                              "type": "continuous",
+                              "roundness": 0.5
+                          },
+                          "length": 500
+                      },
+                      "layout": {
+                          "randomSeed": undefined,
+                          "improvedLayout": true,
+                          "hierarchical": {
+                              "enabled": false
+                          }
+                      }
+                  };
 
                   
 
@@ -108,6 +165,12 @@
                   
 
                   network = new vis.Network(container, data, options);
+
+                  // 稳定化完成后停止物理引擎
+                  network.once('stabilizationIterationsDone', function() {
+                      network.setOptions({ physics: false });
+                      console.log('布局已稳定，物理引擎已停止');
+                  });
 
                   
 
