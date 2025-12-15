@@ -1,0 +1,531 @@
+<html>
+    <head>
+        <meta charset="utf-8">
+        
+            <script src="lib/bindings/utils.js"></script>
+            <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/vis-network/9.1.2/dist/dist/vis-network.min.css" integrity="sha512-WgxfT5LWjfszlPHXRmBWHkV2eceiWTOBvrKCNbdgDYTHrT2AeLCGbF4sZlZw3UMN3WtL0tGUoIAKsu8mllg/XA==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+            <script src="https://cdnjs.cloudflare.com/ajax/libs/vis-network/9.1.2/dist/vis-network.min.js" integrity="sha512-LnvoEWDFrqGHlHmDD2101OrLcbsfkrzoSpvtSQtxK3RMnRV0eOkhhBN2dXHKRrUU8p2DGRTk35n4O8nWSVe1mQ==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+            
+        
+<center>
+<h1></h1>
+</center>
+
+<!-- <link rel="stylesheet" href="../node_modules/vis/dist/vis.min.css" type="text/css" />
+<script type="text/javascript" src="../node_modules/vis/dist/vis.js"> </script>-->
+        <link
+          href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta3/dist/css/bootstrap.min.css"
+          rel="stylesheet"
+          integrity="sha384-eOJMYsd53ii+scO/bJGFsiCZc+5NDVN2yr8+0RDqr0Ql0h+rP48ckxlpbzKgwra6"
+          crossorigin="anonymous"
+        />
+        <script
+          src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta3/dist/js/bootstrap.bundle.min.js"
+          integrity="sha384-JEW9xMcG8R+pH31jmWH6WWP0WintQrMb4s7ZOdauHnUtxwoG2vI5DkLtS3qm9Ekf"
+          crossorigin="anonymous"
+        ></script>
+
+
+        <center>
+          <h1></h1>
+        </center>
+        <style type="text/css">
+
+             #mynetwork {
+                 width: 100%;
+                 height: 1000px;
+                 background-color: #ffffff;
+                 border: 1px solid lightgray;
+                 position: relative;
+                 float: left;
+             }
+
+             
+
+             
+
+             
+        </style>
+    </head>
+
+
+    <body>
+        <div class="card" style="width: 100%">
+            
+            
+            <div id="mynetwork" class="card-body"></div>
+        </div>
+
+        
+        
+
+        <script type="text/javascript">
+
+              // initialize global variables.
+              var edges;
+              var nodes;
+              var allNodes;
+              var allEdges;
+              var nodeColors;
+              var originalNodes;
+              var network;
+              var container;
+              var options, data;
+              var filter = {
+                  item : '',
+                  property : '',
+                  value : []
+              };
+
+              
+
+              
+
+              // This method is responsible for drawing the graph, returns the drawn network
+              function drawGraph() {
+                  var container = document.getElementById('mynetwork');
+
+                  
+
+                  // parsing and collecting nodes and edges from the python
+                  nodes = new vis.DataSet([{"color": {"background": "transparent", "border": "#000000"}, "font": {"color": "#000000"}, "id": "\u6559\u79d1\u7248\u9009\u62e9\u6027\u5fc5\u4fee\u4e8c", "label": "\u6559\u79d1\u7248\u9009\u62e9\u6027\u5fc5\u4fee\u4e8c", "shape": "circle", "size": 100}, {"color": {"background": "transparent", "border": "#000000"}, "font": {"color": "#000000"}, "id": "\u6559\u79d1\u7248\u9009\u62e9\u6027\u5fc5\u4fee\u4e8c_\u7b2c1\u7ae0 \u78c1\u573a\u5bf9\u7535\u6d41\u7684\u4f5c\u7528", "label": "\u7b2c1\u7ae0 \u78c1\u573a\u5bf9\u7535\u6d41\u7684\u4f5c\u7528", "shape": "box", "size": 70}, {"color": {"background": "transparent", "border": "#000000"}, "font": {"color": "#000000"}, "id": "\u6559\u79d1\u7248\u9009\u62e9\u6027\u5fc5\u4fee\u4e8c_\u7b2c1\u7ae0 \u78c1\u573a\u5bf9\u7535\u6d41\u7684\u4f5c\u7528_1.1\u5b89\u57f9\u529b", "label": "1.1\u5b89\u57f9\u529b", "shape": "ellipse", "size": 55}, {"color": "#F38181", "font": {"color": "#000000"}, "id": "\u6559\u79d1\u7248\u9009\u62e9\u6027\u5fc5\u4fee\u4e8c_\u7b2c1\u7ae0 \u78c1\u573a\u5bf9\u7535\u6d41\u7684\u4f5c\u7528_1.1\u5b89\u57f9\u529b_\u8ba4\u8bc6\u5b89\u57f9\u529b", "label": "\u8ba4\u8bc6\u5b89\u57f9\u529b", "shape": "dot", "size": 40}, {"color": "#F38181", "font": {"color": "#000000"}, "id": "\u6559\u79d1\u7248\u9009\u62e9\u6027\u5fc5\u4fee\u4e8c___\u5b89\u57f9\u529b\u7684\u65b9\u5411", "label": "\u5b89\u57f9\u529b\u7684\u65b9\u5411", "shape": "dot", "size": 40}, {"color": "#F38181", "font": {"color": "#000000"}, "id": "\u6559\u79d1\u7248\u9009\u62e9\u6027\u5fc5\u4fee\u4e8c___\u5b89\u57f9\u529b\u7684\u5927\u5c0f", "label": "\u5b89\u57f9\u529b\u7684\u5927\u5c0f", "shape": "dot", "size": 40}, {"color": {"background": "transparent", "border": "#000000"}, "font": {"color": "#000000"}, "id": "\u6559\u79d1\u7248\u9009\u62e9\u6027\u5fc5\u4fee\u4e8c__1.2\u5b89\u57f9\u529b\u7684\u5e94\u7528", "label": "1.2\u5b89\u57f9\u529b\u7684\u5e94\u7528", "shape": "ellipse", "size": 55}, {"color": "#F38181", "font": {"color": "#000000"}, "id": "\u6559\u79d1\u7248\u9009\u62e9\u6027\u5fc5\u4fee\u4e8c__1.2\u5b89\u57f9\u529b\u7684\u5e94\u7528_\u76f4\u6d41\u7535\u52a8\u673a", "label": "\u76f4\u6d41\u7535\u52a8\u673a", "shape": "dot", "size": 40}, {"color": "#F38181", "font": {"color": "#000000"}, "id": "\u6559\u79d1\u7248\u9009\u62e9\u6027\u5fc5\u4fee\u4e8c___\u7535\u78c1\u70ae", "label": "\u7535\u78c1\u70ae", "shape": "dot", "size": 40}, {"color": "#F38181", "font": {"color": "#000000"}, "id": "\u6559\u79d1\u7248\u9009\u62e9\u6027\u5fc5\u4fee\u4e8c___\u78c1\u7535\u5f0f\u7535\u6d41\u8868", "label": "\u78c1\u7535\u5f0f\u7535\u6d41\u8868", "shape": "dot", "size": 40}, {"color": {"background": "transparent", "border": "#000000"}, "font": {"color": "#000000"}, "id": "\u6559\u79d1\u7248\u9009\u62e9\u6027\u5fc5\u4fee\u4e8c__1.3\u6d1b\u4f26\u5179\u529b", "label": "1.3\u6d1b\u4f26\u5179\u529b", "shape": "ellipse", "size": 55}, {"color": "#F38181", "font": {"color": "#000000"}, "id": "\u6559\u79d1\u7248\u9009\u62e9\u6027\u5fc5\u4fee\u4e8c__1.3\u6d1b\u4f26\u5179\u529b_\u521d\u8bc6\u6d1b\u4f26\u5179\u529b", "label": "\u521d\u8bc6\u6d1b\u4f26\u5179\u529b", "shape": "dot", "size": 40}, {"color": "#F38181", "font": {"color": "#000000"}, "id": "\u6559\u79d1\u7248\u9009\u62e9\u6027\u5fc5\u4fee\u4e8c___\u6d1b\u4f26\u5179\u529b\u7684\u65b9\u5411", "label": "\u6d1b\u4f26\u5179\u529b\u7684\u65b9\u5411", "shape": "dot", "size": 40}, {"color": "#F38181", "font": {"color": "#000000"}, "id": "\u6559\u79d1\u7248\u9009\u62e9\u6027\u5fc5\u4fee\u4e8c___\u6d1b\u4f26\u5179\u529b\u7684\u5927\u5c0f", "label": "\u6d1b\u4f26\u5179\u529b\u7684\u5927\u5c0f", "shape": "dot", "size": 40}, {"color": "#F38181", "font": {"color": "#000000"}, "id": "\u6559\u79d1\u7248\u9009\u62e9\u6027\u5fc5\u4fee\u4e8c___\u5e26\u7535\u7c92\u5b50\u5728\u5300\u5f3a\u78c1\u573a\u4e2d\u7684\u8fd0\u52a8", "label": "\u5e26\u7535\u7c92\u5b50\u5728\u5300\u5f3a\u78c1\u573a\u4e2d\u7684\u8fd0\u52a8", "shape": "dot", "size": 40}, {"color": {"background": "transparent", "border": "#000000"}, "font": {"color": "#000000"}, "id": "\u6559\u79d1\u7248\u9009\u62e9\u6027\u5fc5\u4fee\u4e8c__1.4\u6d1b\u4f26\u5179\u529b\u7684\u5e94\u7528", "label": "1.4\u6d1b\u4f26\u5179\u529b\u7684\u5e94\u7528", "shape": "ellipse", "size": 55}, {"color": "#F38181", "font": {"color": "#000000"}, "id": "\u6559\u79d1\u7248\u9009\u62e9\u6027\u5fc5\u4fee\u4e8c__1.4\u6d1b\u4f26\u5179\u529b\u7684\u5e94\u7528_\u5229\u7528\u78c1\u573a\u63a7\u5236\u5e26\u7535\u7c92\u5b50\u8fd0\u52a8", "label": "\u5229\u7528\u78c1\u573a\u63a7\u5236\u5e26\u7535\u7c92\u5b50\u8fd0\u52a8", "shape": "dot", "size": 40}, {"color": "#F38181", "font": {"color": "#000000"}, "id": "\u6559\u79d1\u7248\u9009\u62e9\u6027\u5fc5\u4fee\u4e8c___\u8d28\u8c31\u4eea", "label": "\u8d28\u8c31\u4eea", "shape": "dot", "size": 40}, {"color": "#F38181", "font": {"color": "#000000"}, "id": "\u6559\u79d1\u7248\u9009\u62e9\u6027\u5fc5\u4fee\u4e8c___\u56de\u65cb\u52a0\u901f\u5668", "label": "\u56de\u65cb\u52a0\u901f\u5668", "shape": "dot", "size": 40}, {"color": {"background": "transparent", "border": "#000000"}, "font": {"color": "#000000"}, "id": "\u6559\u79d1\u7248\u9009\u62e9\u6027\u5fc5\u4fee\u4e8c_\u7b2c2\u7ae0 \u7535\u78c1\u611f\u5e94\u673a\u5668\u5e94\u7528", "label": "\u7b2c2\u7ae0 \u7535\u78c1\u611f\u5e94\u673a\u5668\u5e94\u7528", "shape": "box", "size": 70}, {"color": {"background": "transparent", "border": "#000000"}, "font": {"color": "#000000"}, "id": "\u6559\u79d1\u7248\u9009\u62e9\u6027\u5fc5\u4fee\u4e8c_\u7b2c2\u7ae0 \u7535\u78c1\u611f\u5e94\u673a\u5668\u5e94\u7528_2.1\u695e\u6b21\u5b9a\u5f8b", "label": "2.1\u695e\u6b21\u5b9a\u5f8b", "shape": "ellipse", "size": 55}, {"color": "#F38181", "font": {"color": "#000000"}, "id": "\u6559\u79d1\u7248\u9009\u62e9\u6027\u5fc5\u4fee\u4e8c_\u7b2c2\u7ae0 \u7535\u78c1\u611f\u5e94\u673a\u5668\u5e94\u7528_2.1\u695e\u6b21\u5b9a\u5f8b_\u53f3\u624b\u5b9a\u5219", "label": "\u53f3\u624b\u5b9a\u5219", "shape": "dot", "size": 40}, {"color": "#F38181", "font": {"color": "#000000"}, "id": "\u6559\u79d1\u7248\u9009\u62e9\u6027\u5fc5\u4fee\u4e8c___\u695e\u6b21\u5b9a\u5f8b", "label": "\u695e\u6b21\u5b9a\u5f8b", "shape": "dot", "size": 40}, {"color": "#F38181", "font": {"color": "#000000"}, "id": "\u6559\u79d1\u7248\u9009\u62e9\u6027\u5fc5\u4fee\u4e8c___\u695e\u6b21\u5b9a\u5f8b\u7684\u5e94\u7528", "label": "\u695e\u6b21\u5b9a\u5f8b\u7684\u5e94\u7528", "shape": "dot", "size": 40}, {"color": {"background": "transparent", "border": "#000000"}, "font": {"color": "#000000"}, "id": "\u6559\u79d1\u7248\u9009\u62e9\u6027\u5fc5\u4fee\u4e8c__2.2\u6cd5\u62c9\u7b2c\u7535\u78c1\u611f\u5e94\u5b9a\u5f8b", "label": "2.2\u6cd5\u62c9\u7b2c\u7535\u78c1\u611f\u5e94\u5b9a\u5f8b", "shape": "ellipse", "size": 55}, {"color": "#F38181", "font": {"color": "#000000"}, "id": "\u6559\u79d1\u7248\u9009\u62e9\u6027\u5fc5\u4fee\u4e8c__2.2\u6cd5\u62c9\u7b2c\u7535\u78c1\u611f\u5e94\u5b9a\u5f8b_\u7535\u78c1\u611f\u5e94\u5b9a\u5f8b", "label": "\u7535\u78c1\u611f\u5e94\u5b9a\u5f8b", "shape": "dot", "size": 40}, {"color": "#F38181", "font": {"color": "#000000"}, "id": "\u6559\u79d1\u7248\u9009\u62e9\u6027\u5fc5\u4fee\u4e8c___\u5bfc\u4f53\u5207\u5272\u78c1\u611f\u7ebf\u7684\u611f\u5e94\u7535\u52a8\u52bf", "label": "\u5bfc\u4f53\u5207\u5272\u78c1\u611f\u7ebf\u7684\u611f\u5e94\u7535\u52a8\u52bf", "shape": "dot", "size": 40}, {"color": {"background": "transparent", "border": "#000000"}, "font": {"color": "#000000"}, "id": "\u6559\u79d1\u7248\u9009\u62e9\u6027\u5fc5\u4fee\u4e8c__2.3\u6da1\u6d41 \u7535\u78c1\u963b\u5c3c \u7535\u78c1\u9a71\u52a8", "label": "2.3\u6da1\u6d41 \u7535\u78c1\u963b\u5c3c \u7535\u78c1\u9a71\u52a8", "shape": "ellipse", "size": 55}, {"color": "#F38181", "font": {"color": "#000000"}, "id": "\u6559\u79d1\u7248\u9009\u62e9\u6027\u5fc5\u4fee\u4e8c__2.3\u6da1\u6d41 \u7535\u78c1\u963b\u5c3c \u7535\u78c1\u9a71\u52a8_\u6da1\u6d41", "label": "\u6da1\u6d41", "shape": "dot", "size": 40}, {"color": "#F38181", "font": {"color": "#000000"}, "id": "\u6559\u79d1\u7248\u9009\u62e9\u6027\u5fc5\u4fee\u4e8c___\u7535\u78c1\u963b\u5c3c\u548c\u7535\u78c1\u5236\u52a8", "label": "\u7535\u78c1\u963b\u5c3c\u548c\u7535\u78c1\u5236\u52a8", "shape": "dot", "size": 40}, {"color": "#F38181", "font": {"color": "#000000"}, "id": "\u6559\u79d1\u7248\u9009\u62e9\u6027\u5fc5\u4fee\u4e8c___\u7535\u78c1\u9a71\u52a8", "label": "\u7535\u78c1\u9a71\u52a8", "shape": "dot", "size": 40}, {"color": {"background": "transparent", "border": "#000000"}, "font": {"color": "#000000"}, "id": "\u6559\u79d1\u7248\u9009\u62e9\u6027\u5fc5\u4fee\u4e8c__2.4\u81ea\u611f", "label": "2.4\u81ea\u611f", "shape": "ellipse", "size": 55}, {"color": "#F38181", "font": {"color": "#000000"}, "id": "\u6559\u79d1\u7248\u9009\u62e9\u6027\u5fc5\u4fee\u4e8c__2.4\u81ea\u611f_\u81ea\u611f\u73b0\u8c61", "label": "\u81ea\u611f\u73b0\u8c61", "shape": "dot", "size": 40}, {"color": "#F38181", "font": {"color": "#000000"}, "id": "\u6559\u79d1\u7248\u9009\u62e9\u6027\u5fc5\u4fee\u4e8c___\u81ea\u611f\u7cfb\u6570", "label": "\u81ea\u611f\u7cfb\u6570", "shape": "dot", "size": 40}, {"color": "#F38181", "font": {"color": "#000000"}, "id": "\u6559\u79d1\u7248\u9009\u62e9\u6027\u5fc5\u4fee\u4e8c___\u81ea\u611f\u73b0\u8c61\u7684\u5e94\u7528\u2014\u2014\u65e5\u5149\u706f", "label": "\u81ea\u611f\u73b0\u8c61\u7684\u5e94\u7528\u2014\u2014\u65e5\u5149\u706f", "shape": "dot", "size": 40}, {"color": {"background": "transparent", "border": "#000000"}, "font": {"color": "#000000"}, "id": "\u6559\u79d1\u7248\u9009\u62e9\u6027\u5fc5\u4fee\u4e8c_\u7b2c3\u7ae0 \u4ea4\u6d41\u7535", "label": "\u7b2c3\u7ae0 \u4ea4\u6d41\u7535", "shape": "box", "size": 70}, {"color": {"background": "transparent", "border": "#000000"}, "font": {"color": "#000000"}, "id": "\u6559\u79d1\u7248\u9009\u62e9\u6027\u5fc5\u4fee\u4e8c_\u7b2c3\u7ae0 \u4ea4\u6d41\u7535_3.1\u4ea4\u53d8\u7535\u6d41", "label": "3.1\u4ea4\u53d8\u7535\u6d41", "shape": "ellipse", "size": 55}, {"color": "#F38181", "font": {"color": "#000000"}, "id": "\u6559\u79d1\u7248\u9009\u62e9\u6027\u5fc5\u4fee\u4e8c_\u7b2c3\u7ae0 \u4ea4\u6d41\u7535_3.1\u4ea4\u53d8\u7535\u6d41_\u8ba4\u8bc6\u4ea4\u53d8\u7535\u6d41", "label": "\u8ba4\u8bc6\u4ea4\u53d8\u7535\u6d41", "shape": "dot", "size": 40}, {"color": "#F38181", "font": {"color": "#000000"}, "id": "\u6559\u79d1\u7248\u9009\u62e9\u6027\u5fc5\u4fee\u4e8c___\u6b63\u5f26\u4ea4\u6d41\u7535\u7684\u4ea7\u751f\u548c\u53d8\u5316\u89c4\u5f8b", "label": "\u6b63\u5f26\u4ea4\u6d41\u7535\u7684\u4ea7\u751f\u548c\u53d8\u5316\u89c4\u5f8b", "shape": "dot", "size": 40}, {"color": "#F38181", "font": {"color": "#000000"}, "id": "\u6559\u79d1\u7248\u9009\u62e9\u6027\u5fc5\u4fee\u4e8c___\u53d1\u7535\u673a\u4e0e\u7535\u52a8\u673a\u4e2d\u7684\u80fd\u91cf\u8f6c\u5316", "label": "\u53d1\u7535\u673a\u4e0e\u7535\u52a8\u673a\u4e2d\u7684\u80fd\u91cf\u8f6c\u5316", "shape": "dot", "size": 40}, {"color": {"background": "transparent", "border": "#000000"}, "font": {"color": "#000000"}, "id": "\u6559\u79d1\u7248\u9009\u62e9\u6027\u5fc5\u4fee\u4e8c__3.2\u6b63\u5f26\u4ea4\u53d8\u7535\u6d41\u7684\u63cf\u8ff0", "label": "3.2\u6b63\u5f26\u4ea4\u53d8\u7535\u6d41\u7684\u63cf\u8ff0", "shape": "ellipse", "size": 55}, {"color": "#F38181", "font": {"color": "#000000"}, "id": "\u6559\u79d1\u7248\u9009\u62e9\u6027\u5fc5\u4fee\u4e8c__3.2\u6b63\u5f26\u4ea4\u53d8\u7535\u6d41\u7684\u63cf\u8ff0_\u5468\u671f\u548c\u9891\u7387", "label": "\u5468\u671f\u548c\u9891\u7387", "shape": "dot", "size": 40}, {"color": "#F38181", "font": {"color": "#000000"}, "id": "\u6559\u79d1\u7248\u9009\u62e9\u6027\u5fc5\u4fee\u4e8c___\u5cf0\u503c \u6709\u6548\u503c", "label": "\u5cf0\u503c \u6709\u6548\u503c", "shape": "dot", "size": 40}, {"color": {"background": "transparent", "border": "#000000"}, "font": {"color": "#000000"}, "id": "\u6559\u79d1\u7248\u9009\u62e9\u6027\u5fc5\u4fee\u4e8c__3.3\u53d8\u538b\u5668", "label": "3.3\u53d8\u538b\u5668", "shape": "ellipse", "size": 55}, {"color": "#F38181", "font": {"color": "#000000"}, "id": "\u6559\u79d1\u7248\u9009\u62e9\u6027\u5fc5\u4fee\u4e8c__3.3\u53d8\u538b\u5668_\u53d8\u538b\u5668\u7684\u7ed3\u6784\u4e0e\u539f\u7406", "label": "\u53d8\u538b\u5668\u7684\u7ed3\u6784\u4e0e\u539f\u7406", "shape": "dot", "size": 40}, {"color": "#F38181", "font": {"color": "#000000"}, "id": "\u6559\u79d1\u7248\u9009\u62e9\u6027\u5fc5\u4fee\u4e8c___\u53d8\u538b\u5668\u7684\u7535\u538b\u4e0e\u531d\u6570\u7684\u5173\u7cfb", "label": "\u53d8\u538b\u5668\u7684\u7535\u538b\u4e0e\u531d\u6570\u7684\u5173\u7cfb", "shape": "dot", "size": 40}, {"color": "#F38181", "font": {"color": "#000000"}, "id": "\u6559\u79d1\u7248\u9009\u62e9\u6027\u5fc5\u4fee\u4e8c___\u7535\u538b\u4e92\u611f\u5668\u548c\u7535\u6d41\u4e92\u611f\u5668", "label": "\u7535\u538b\u4e92\u611f\u5668\u548c\u7535\u6d41\u4e92\u611f\u5668", "shape": "dot", "size": 40}, {"color": {"background": "transparent", "border": "#000000"}, "font": {"color": "#000000"}, "id": "\u6559\u79d1\u7248\u9009\u62e9\u6027\u5fc5\u4fee\u4e8c__3.4\u7535\u80fd\u7684\u8f93\u9001", "label": "3.4\u7535\u80fd\u7684\u8f93\u9001", "shape": "ellipse", "size": 55}, {"color": "#F38181", "font": {"color": "#000000"}, "id": "\u6559\u79d1\u7248\u9009\u62e9\u6027\u5fc5\u4fee\u4e8c__3.4\u7535\u80fd\u7684\u8f93\u9001_\u7535\u80fd\u8f93\u9001\u4e2d\u7684\u7535\u538b\u635f\u5931\u548c\u7535\u80fd\u635f\u8017", "label": "\u7535\u80fd\u8f93\u9001\u4e2d\u7684\u7535\u538b\u635f\u5931\u548c\u7535\u80fd\u635f\u8017", "shape": "dot", "size": 40}, {"color": "#F38181", "font": {"color": "#000000"}, "id": "\u6559\u79d1\u7248\u9009\u62e9\u6027\u5fc5\u4fee\u4e8c___\u8fdc\u8ddd\u79bb\u8f93\u7535\u7cfb\u7edf", "label": "\u8fdc\u8ddd\u79bb\u8f93\u7535\u7cfb\u7edf", "shape": "dot", "size": 40}, {"color": "#F38181", "font": {"color": "#000000"}, "id": "\u6559\u79d1\u7248\u9009\u62e9\u6027\u5fc5\u4fee\u4e8c___\u76f4\u6d41\u8f93\u7535", "label": "\u76f4\u6d41\u8f93\u7535", "shape": "dot", "size": 40}, {"color": {"background": "transparent", "border": "#000000"}, "font": {"color": "#000000"}, "id": "\u6559\u79d1\u7248\u9009\u62e9\u6027\u5fc5\u4fee\u4e8c_\u7b2c4\u7ae0 \u7535\u78c1\u632f\u8361\u4e0e\u7535\u78c1\u6ce2", "label": "\u7b2c4\u7ae0 \u7535\u78c1\u632f\u8361\u4e0e\u7535\u78c1\u6ce2", "shape": "box", "size": 70}, {"color": {"background": "transparent", "border": "#000000"}, "font": {"color": "#000000"}, "id": "\u6559\u79d1\u7248\u9009\u62e9\u6027\u5fc5\u4fee\u4e8c_\u7b2c4\u7ae0 \u7535\u78c1\u632f\u8361\u4e0e\u7535\u78c1\u6ce2_4.1\u7535\u78c1\u632f\u8361", "label": "4.1\u7535\u78c1\u632f\u8361", "shape": "ellipse", "size": 55}, {"color": "#F38181", "font": {"color": "#000000"}, "id": "\u6559\u79d1\u7248\u9009\u62e9\u6027\u5fc5\u4fee\u4e8c_\u7b2c4\u7ae0 \u7535\u78c1\u632f\u8361\u4e0e\u7535\u78c1\u6ce2_4.1\u7535\u78c1\u632f\u8361_LC\u632f\u8361\u7535\u8def\u548c\u632f\u8361\u7535\u6d41", "label": "LC\u632f\u8361\u7535\u8def\u548c\u632f\u8361\u7535\u6d41", "shape": "dot", "size": 40}, {"color": "#F38181", "font": {"color": "#000000"}, "id": "\u6559\u79d1\u7248\u9009\u62e9\u6027\u5fc5\u4fee\u4e8c___\u65e0\u963b\u5c3c\u632f\u8361\u548c\u963b\u5c3c\u632f\u8361", "label": "\u65e0\u963b\u5c3c\u632f\u8361\u548c\u963b\u5c3c\u632f\u8361", "shape": "dot", "size": 40}, {"color": "#F38181", "font": {"color": "#000000"}, "id": "\u6559\u79d1\u7248\u9009\u62e9\u6027\u5fc5\u4fee\u4e8c___\u7535\u78c1\u632f\u8361\u7684\u5468\u671f\u548c\u9891\u7387", "label": "\u7535\u78c1\u632f\u8361\u7684\u5468\u671f\u548c\u9891\u7387", "shape": "dot", "size": 40}, {"color": {"background": "transparent", "border": "#000000"}, "font": {"color": "#000000"}, "id": "\u6559\u79d1\u7248\u9009\u62e9\u6027\u5fc5\u4fee\u4e8c__4.2\u7535\u78c1\u6ce2", "label": "4.2\u7535\u78c1\u6ce2", "shape": "ellipse", "size": 55}, {"color": "#F38181", "font": {"color": "#000000"}, "id": "\u6559\u79d1\u7248\u9009\u62e9\u6027\u5fc5\u4fee\u4e8c__4.2\u7535\u78c1\u6ce2_\u9ea6\u514b\u65af\u97e6\u7535\u78c1\u7406\u8bba\u7684\u4e24\u4e2a\u57fa\u672c\u5047\u8bbe", "label": "\u9ea6\u514b\u65af\u97e6\u7535\u78c1\u7406\u8bba\u7684\u4e24\u4e2a\u57fa\u672c\u5047\u8bbe", "shape": "dot", "size": 40}, {"color": "#F38181", "font": {"color": "#000000"}, "id": "\u6559\u79d1\u7248\u9009\u62e9\u6027\u5fc5\u4fee\u4e8c___\u7535\u78c1\u6ce2", "label": "\u7535\u78c1\u6ce2", "shape": "dot", "size": 40}, {"color": "#F38181", "font": {"color": "#000000"}, "id": "\u6559\u79d1\u7248\u9009\u62e9\u6027\u5fc5\u4fee\u4e8c___\u8d6b\u5179\u5b9e\u9a8c\u8bc1\u5b9e\u4e86\u7535\u78c1\u6ce2\u7684\u5b58\u5728", "label": "\u8d6b\u5179\u5b9e\u9a8c\u8bc1\u5b9e\u4e86\u7535\u78c1\u6ce2\u7684\u5b58\u5728", "shape": "dot", "size": 40}, {"color": "#F38181", "font": {"color": "#000000"}, "id": "\u6559\u79d1\u7248\u9009\u62e9\u6027\u5fc5\u4fee\u4e8c___\u9ea6\u514b\u65af\u97e6\u7406\u8bba\u5728\u7269\u7406\u5b66\u53d1\u5c55\u53f2\u4e0a\u7684\u610f\u4e49", "label": "\u9ea6\u514b\u65af\u97e6\u7406\u8bba\u5728\u7269\u7406\u5b66\u53d1\u5c55\u53f2\u4e0a\u7684\u610f\u4e49", "shape": "dot", "size": 40}, {"color": {"background": "transparent", "border": "#000000"}, "font": {"color": "#000000"}, "id": "\u6559\u79d1\u7248\u9009\u62e9\u6027\u5fc5\u4fee\u4e8c__4.3\u7535\u78c1\u6ce2\u8c31", "label": "4.3\u7535\u78c1\u6ce2\u8c31", "shape": "ellipse", "size": 55}, {"color": "#F38181", "font": {"color": "#000000"}, "id": "\u6559\u79d1\u7248\u9009\u62e9\u6027\u5fc5\u4fee\u4e8c__4.3\u7535\u78c1\u6ce2\u8c31_\u53ef\u89c1\u5149", "label": "\u53ef\u89c1\u5149", "shape": "dot", "size": 40}, {"color": "#F38181", "font": {"color": "#000000"}, "id": "\u6559\u79d1\u7248\u9009\u62e9\u6027\u5fc5\u4fee\u4e8c___\u65e0\u7ebf\u7535\u6ce2", "label": "\u65e0\u7ebf\u7535\u6ce2", "shape": "dot", "size": 40}, {"color": "#F38181", "font": {"color": "#000000"}, "id": "\u6559\u79d1\u7248\u9009\u62e9\u6027\u5fc5\u4fee\u4e8c___\u7ea2\u5916\u7ebf", "label": "\u7ea2\u5916\u7ebf", "shape": "dot", "size": 40}, {"color": "#F38181", "font": {"color": "#000000"}, "id": "\u6559\u79d1\u7248\u9009\u62e9\u6027\u5fc5\u4fee\u4e8c___\u7d2b\u5916\u7ebf", "label": "\u7d2b\u5916\u7ebf", "shape": "dot", "size": 40}, {"color": "#F38181", "font": {"color": "#000000"}, "id": "\u6559\u79d1\u7248\u9009\u62e9\u6027\u5fc5\u4fee\u4e8c___X\u5c04\u7ebf", "label": "X\u5c04\u7ebf", "shape": "dot", "size": 40}, {"color": "#F38181", "font": {"color": "#000000"}, "id": "\u6559\u79d1\u7248\u9009\u62e9\u6027\u5fc5\u4fee\u4e8c___\u03b3\u5c04\u7ebf", "label": "\u03b3\u5c04\u7ebf", "shape": "dot", "size": 40}, {"color": {"background": "transparent", "border": "#000000"}, "font": {"color": "#000000"}, "id": "\u6559\u79d1\u7248\u9009\u62e9\u6027\u5fc5\u4fee\u4e8c__4.4\u65e0\u7ebf\u7535\u6ce2\u7684\u53d1\u5c04\u3001\u4f20\u64ad\u4e0e\u63a5\u53d7", "label": "4.4\u65e0\u7ebf\u7535\u6ce2\u7684\u53d1\u5c04\u3001\u4f20\u64ad\u4e0e\u63a5\u53d7", "shape": "ellipse", "size": 55}, {"color": "#F38181", "font": {"color": "#000000"}, "id": "\u6559\u79d1\u7248\u9009\u62e9\u6027\u5fc5\u4fee\u4e8c__4.4\u65e0\u7ebf\u7535\u6ce2\u7684\u53d1\u5c04\u3001\u4f20\u64ad\u4e0e\u63a5\u53d7_\u65e0\u7ebf\u7535\u6ce2\u7684\u53d1\u5c04", "label": "\u65e0\u7ebf\u7535\u6ce2\u7684\u53d1\u5c04", "shape": "dot", "size": 40}, {"color": "#F38181", "font": {"color": "#000000"}, "id": "\u6559\u79d1\u7248\u9009\u62e9\u6027\u5fc5\u4fee\u4e8c___\u65e0\u7ebf\u7535\u6ce2\u7684\u4f20\u64ad", "label": "\u65e0\u7ebf\u7535\u6ce2\u7684\u4f20\u64ad", "shape": "dot", "size": 40}, {"color": "#F38181", "font": {"color": "#000000"}, "id": "\u6559\u79d1\u7248\u9009\u62e9\u6027\u5fc5\u4fee\u4e8c___\u65e0\u7ebf\u7535\u6ce2\u7684\u63a5\u53d7", "label": "\u65e0\u7ebf\u7535\u6ce2\u7684\u63a5\u53d7", "shape": "dot", "size": 40}, {"color": {"background": "transparent", "border": "#000000"}, "font": {"color": "#000000"}, "id": "\u6559\u79d1\u7248\u9009\u62e9\u6027\u5fc5\u4fee\u4e8c__4.5\u65e0\u7ebf\u7535\u6ce2\u4e0e\u79fb\u52a8\u4e92\u8054\u7f51", "label": "4.5\u65e0\u7ebf\u7535\u6ce2\u4e0e\u79fb\u52a8\u4e92\u8054\u7f51", "shape": "ellipse", "size": 55}, {"color": "#F38181", "font": {"color": "#000000"}, "id": "\u6559\u79d1\u7248\u9009\u62e9\u6027\u5fc5\u4fee\u4e8c__4.5\u65e0\u7ebf\u7535\u6ce2\u4e0e\u79fb\u52a8\u4e92\u8054\u7f51_\u7535\u78c1\u6ce2\u4e0e\u4fe1\u606f\u6280\u672f\u7684\u6f14\u53d8", "label": "\u7535\u78c1\u6ce2\u4e0e\u4fe1\u606f\u6280\u672f\u7684\u6f14\u53d8", "shape": "dot", "size": 40}, {"color": "#F38181", "font": {"color": "#000000"}, "id": "\u6559\u79d1\u7248\u9009\u62e9\u6027\u5fc5\u4fee\u4e8c___\u8702\u7a9d\u7cfb\u7edf", "label": "\u8702\u7a9d\u7cfb\u7edf", "shape": "dot", "size": 40}, {"color": "#F38181", "font": {"color": "#000000"}, "id": "\u6559\u79d1\u7248\u9009\u62e9\u6027\u5fc5\u4fee\u4e8c___\u7f51\u7edc\u534f\u8bae", "label": "\u7f51\u7edc\u534f\u8bae", "shape": "dot", "size": 40}, {"color": "#F38181", "font": {"color": "#000000"}, "id": "\u6559\u79d1\u7248\u9009\u62e9\u6027\u5fc5\u4fee\u4e8c___\u7528\u7535\u78c1\u6ce2\u4f20\u9012\u4e8c\u8fdb\u5236\u6570\u636e", "label": "\u7528\u7535\u78c1\u6ce2\u4f20\u9012\u4e8c\u8fdb\u5236\u6570\u636e", "shape": "dot", "size": 40}, {"color": {"background": "transparent", "border": "#000000"}, "font": {"color": "#000000"}, "id": "\u6559\u79d1\u7248\u9009\u62e9\u6027\u5fc5\u4fee\u4e8c_\u7b2c5\u7ae0\u4f20\u611f\u5668", "label": "\u7b2c5\u7ae0\u4f20\u611f\u5668", "shape": "box", "size": 70}, {"color": {"background": "transparent", "border": "#000000"}, "font": {"color": "#000000"}, "id": "\u6559\u79d1\u7248\u9009\u62e9\u6027\u5fc5\u4fee\u4e8c_\u7b2c5\u7ae0\u4f20\u611f\u5668_5.1\u8ba4\u8bc6\u4f20\u611f\u5668", "label": "5.1\u8ba4\u8bc6\u4f20\u611f\u5668", "shape": "ellipse", "size": 55}, {"color": "#F38181", "font": {"color": "#000000"}, "id": "\u6559\u79d1\u7248\u9009\u62e9\u6027\u5fc5\u4fee\u4e8c_\u7b2c5\u7ae0\u4f20\u611f\u5668_5.1\u8ba4\u8bc6\u4f20\u611f\u5668_\u4ec0\u4e48\u662f\u4f20\u611f\u5668", "label": "\u4ec0\u4e48\u662f\u4f20\u611f\u5668", "shape": "dot", "size": 40}, {"color": "#F38181", "font": {"color": "#000000"}, "id": "\u6559\u79d1\u7248\u9009\u62e9\u6027\u5fc5\u4fee\u4e8c___\u4f20\u611f\u5668\u7684\u7ed3\u6784", "label": "\u4f20\u611f\u5668\u7684\u7ed3\u6784", "shape": "dot", "size": 40}, {"color": "#F38181", "font": {"color": "#000000"}, "id": "\u6559\u79d1\u7248\u9009\u62e9\u6027\u5fc5\u4fee\u4e8c___\u4f20\u611f\u5668\u7684\u5206\u7c7by", "label": "\u4f20\u611f\u5668\u7684\u5206\u7c7by", "shape": "dot", "size": 40}, {"color": {"background": "transparent", "border": "#000000"}, "font": {"color": "#000000"}, "id": "\u6559\u79d1\u7248\u9009\u62e9\u6027\u5fc5\u4fee\u4e8c__5.2\u5e38\u89c1\u4f20\u611f\u5668\u7684\u5de5\u4f5c\u539f\u7406", "label": "5.2\u5e38\u89c1\u4f20\u611f\u5668\u7684\u5de5\u4f5c\u539f\u7406", "shape": "ellipse", "size": 55}, {"color": "#F38181", "font": {"color": "#000000"}, "id": "\u6559\u79d1\u7248\u9009\u62e9\u6027\u5fc5\u4fee\u4e8c__5.2\u5e38\u89c1\u4f20\u611f\u5668\u7684\u5de5\u4f5c\u539f\u7406_\u6e29\u5ea6\u4f20\u611f\u5668", "label": "\u6e29\u5ea6\u4f20\u611f\u5668", "shape": "dot", "size": 40}, {"color": "#F38181", "font": {"color": "#000000"}, "id": "\u6559\u79d1\u7248\u9009\u62e9\u6027\u5fc5\u4fee\u4e8c___\u5149\u4f20\u611f\u5668", "label": "\u5149\u4f20\u611f\u5668", "shape": "dot", "size": 40}, {"color": "#F38181", "font": {"color": "#000000"}, "id": "\u6559\u79d1\u7248\u9009\u62e9\u6027\u5fc5\u4fee\u4e8c___\u529b\u4f20\u611f\u5668", "label": "\u529b\u4f20\u611f\u5668", "shape": "dot", "size": 40}, {"color": {"background": "transparent", "border": "#000000"}, "font": {"color": "#000000"}, "id": "\u6559\u79d1\u7248\u9009\u62e9\u6027\u5fc5\u4fee\u4e8c__5.3\u4f20\u611f\u5668\u7684\u5e94\u7528\u4e3e\u4f8b", "label": "5.3\u4f20\u611f\u5668\u7684\u5e94\u7528\u4e3e\u4f8b", "shape": "ellipse", "size": 55}, {"color": "#F38181", "font": {"color": "#000000"}, "id": "\u6559\u79d1\u7248\u9009\u62e9\u6027\u5fc5\u4fee\u4e8c__5.3\u4f20\u611f\u5668\u7684\u5e94\u7528\u4e3e\u4f8b_\u6e29\u5ea6\u4f20\u611f\u5668\u7684\u5e94\u7528\u2014\u2014\u7535\u71a8\u6597", "label": "\u6e29\u5ea6\u4f20\u611f\u5668\u7684\u5e94\u7528\u2014\u2014\u7535\u71a8\u6597", "shape": "dot", "size": 40}, {"color": "#F38181", "font": {"color": "#000000"}, "id": "\u6559\u79d1\u7248\u9009\u62e9\u6027\u5fc5\u4fee\u4e8c___\u6e29\u5ea6\u4f20\u611f\u5668\u7684\u5e94\u7528\u2014\u2014\u7535\u996d\u9505", "label": "\u6e29\u5ea6\u4f20\u611f\u5668\u7684\u5e94\u7528\u2014\u2014\u7535\u996d\u9505", "shape": "dot", "size": 40}, {"color": "#F38181", "font": {"color": "#000000"}, "id": "\u6559\u79d1\u7248\u9009\u62e9\u6027\u5fc5\u4fee\u4e8c___\u5149\u4f20\u611f\u5668\u7684\u5e94\u7528\u2014\u2014\u706b\u707e\u62a5\u8b66\u5668", "label": "\u5149\u4f20\u611f\u5668\u7684\u5e94\u7528\u2014\u2014\u706b\u707e\u62a5\u8b66\u5668", "shape": "dot", "size": 40}, {"color": "#F38181", "font": {"color": "#000000"}, "id": "\u6559\u79d1\u7248\u9009\u62e9\u6027\u5fc5\u4fee\u4e8c___\u5404\u79cd\u4f20\u611f\u5668\u7684\u5e94\u7528\u2014\u2014\u6c7d\u8f66", "label": "\u5404\u79cd\u4f20\u611f\u5668\u7684\u5e94\u7528\u2014\u2014\u6c7d\u8f66", "shape": "dot", "size": 40}, {"color": {"background": "transparent", "border": "#000000"}, "font": {"color": "#000000"}, "id": "\u6559\u79d1\u7248\u9009\u62e9\u6027\u5fc5\u4fee\u4e8c__5.4\u81ea\u5236\u7b80\u5355\u7684\u63a7\u5236\u7535\u8def", "label": "5.4\u81ea\u5236\u7b80\u5355\u7684\u63a7\u5236\u7535\u8def", "shape": "ellipse", "size": 55}, {"color": "#F38181", "font": {"color": "#000000"}, "id": "\u6559\u79d1\u7248\u9009\u62e9\u6027\u5fc5\u4fee\u4e8c__5.4\u81ea\u5236\u7b80\u5355\u7684\u63a7\u5236\u7535\u8def_\u5149\u63a7LED\u706f", "label": "\u5149\u63a7LED\u706f", "shape": "dot", "size": 40}, {"color": "#F38181", "font": {"color": "#000000"}, "id": "\u6559\u79d1\u7248\u9009\u62e9\u6027\u5fc5\u4fee\u4e8c___\u6e29\u5ea6\u62a5\u8b66\u5668", "label": "\u6e29\u5ea6\u62a5\u8b66\u5668", "shape": "dot", "size": 40}]);
+                  edges = new vis.DataSet([{"color": "#888888", "from": "\u6559\u79d1\u7248\u9009\u62e9\u6027\u5fc5\u4fee\u4e8c", "to": "\u6559\u79d1\u7248\u9009\u62e9\u6027\u5fc5\u4fee\u4e8c_\u7b2c1\u7ae0 \u78c1\u573a\u5bf9\u7535\u6d41\u7684\u4f5c\u7528", "width": 3}, {"color": "#AAAAAA", "from": "\u6559\u79d1\u7248\u9009\u62e9\u6027\u5fc5\u4fee\u4e8c_\u7b2c1\u7ae0 \u78c1\u573a\u5bf9\u7535\u6d41\u7684\u4f5c\u7528", "to": "\u6559\u79d1\u7248\u9009\u62e9\u6027\u5fc5\u4fee\u4e8c_\u7b2c1\u7ae0 \u78c1\u573a\u5bf9\u7535\u6d41\u7684\u4f5c\u7528_1.1\u5b89\u57f9\u529b", "width": 2}, {"color": "#CCCCCC", "from": "\u6559\u79d1\u7248\u9009\u62e9\u6027\u5fc5\u4fee\u4e8c_\u7b2c1\u7ae0 \u78c1\u573a\u5bf9\u7535\u6d41\u7684\u4f5c\u7528_1.1\u5b89\u57f9\u529b", "to": "\u6559\u79d1\u7248\u9009\u62e9\u6027\u5fc5\u4fee\u4e8c_\u7b2c1\u7ae0 \u78c1\u573a\u5bf9\u7535\u6d41\u7684\u4f5c\u7528_1.1\u5b89\u57f9\u529b_\u8ba4\u8bc6\u5b89\u57f9\u529b", "width": 1}, {"color": "#CCCCCC", "from": "\u6559\u79d1\u7248\u9009\u62e9\u6027\u5fc5\u4fee\u4e8c_\u7b2c1\u7ae0 \u78c1\u573a\u5bf9\u7535\u6d41\u7684\u4f5c\u7528_1.1\u5b89\u57f9\u529b", "to": "\u6559\u79d1\u7248\u9009\u62e9\u6027\u5fc5\u4fee\u4e8c___\u5b89\u57f9\u529b\u7684\u65b9\u5411", "width": 1}, {"color": "#CCCCCC", "from": "\u6559\u79d1\u7248\u9009\u62e9\u6027\u5fc5\u4fee\u4e8c_\u7b2c1\u7ae0 \u78c1\u573a\u5bf9\u7535\u6d41\u7684\u4f5c\u7528_1.1\u5b89\u57f9\u529b", "to": "\u6559\u79d1\u7248\u9009\u62e9\u6027\u5fc5\u4fee\u4e8c___\u5b89\u57f9\u529b\u7684\u5927\u5c0f", "width": 1}, {"color": "#AAAAAA", "from": "\u6559\u79d1\u7248\u9009\u62e9\u6027\u5fc5\u4fee\u4e8c_\u7b2c1\u7ae0 \u78c1\u573a\u5bf9\u7535\u6d41\u7684\u4f5c\u7528", "to": "\u6559\u79d1\u7248\u9009\u62e9\u6027\u5fc5\u4fee\u4e8c__1.2\u5b89\u57f9\u529b\u7684\u5e94\u7528", "width": 2}, {"color": "#CCCCCC", "from": "\u6559\u79d1\u7248\u9009\u62e9\u6027\u5fc5\u4fee\u4e8c__1.2\u5b89\u57f9\u529b\u7684\u5e94\u7528", "to": "\u6559\u79d1\u7248\u9009\u62e9\u6027\u5fc5\u4fee\u4e8c__1.2\u5b89\u57f9\u529b\u7684\u5e94\u7528_\u76f4\u6d41\u7535\u52a8\u673a", "width": 1}, {"color": "#CCCCCC", "from": "\u6559\u79d1\u7248\u9009\u62e9\u6027\u5fc5\u4fee\u4e8c__1.2\u5b89\u57f9\u529b\u7684\u5e94\u7528", "to": "\u6559\u79d1\u7248\u9009\u62e9\u6027\u5fc5\u4fee\u4e8c___\u7535\u78c1\u70ae", "width": 1}, {"color": "#CCCCCC", "from": "\u6559\u79d1\u7248\u9009\u62e9\u6027\u5fc5\u4fee\u4e8c__1.2\u5b89\u57f9\u529b\u7684\u5e94\u7528", "to": "\u6559\u79d1\u7248\u9009\u62e9\u6027\u5fc5\u4fee\u4e8c___\u78c1\u7535\u5f0f\u7535\u6d41\u8868", "width": 1}, {"color": "#AAAAAA", "from": "\u6559\u79d1\u7248\u9009\u62e9\u6027\u5fc5\u4fee\u4e8c_\u7b2c1\u7ae0 \u78c1\u573a\u5bf9\u7535\u6d41\u7684\u4f5c\u7528", "to": "\u6559\u79d1\u7248\u9009\u62e9\u6027\u5fc5\u4fee\u4e8c__1.3\u6d1b\u4f26\u5179\u529b", "width": 2}, {"color": "#CCCCCC", "from": "\u6559\u79d1\u7248\u9009\u62e9\u6027\u5fc5\u4fee\u4e8c__1.3\u6d1b\u4f26\u5179\u529b", "to": "\u6559\u79d1\u7248\u9009\u62e9\u6027\u5fc5\u4fee\u4e8c__1.3\u6d1b\u4f26\u5179\u529b_\u521d\u8bc6\u6d1b\u4f26\u5179\u529b", "width": 1}, {"color": "#CCCCCC", "from": "\u6559\u79d1\u7248\u9009\u62e9\u6027\u5fc5\u4fee\u4e8c__1.3\u6d1b\u4f26\u5179\u529b", "to": "\u6559\u79d1\u7248\u9009\u62e9\u6027\u5fc5\u4fee\u4e8c___\u6d1b\u4f26\u5179\u529b\u7684\u65b9\u5411", "width": 1}, {"color": "#CCCCCC", "from": "\u6559\u79d1\u7248\u9009\u62e9\u6027\u5fc5\u4fee\u4e8c__1.3\u6d1b\u4f26\u5179\u529b", "to": "\u6559\u79d1\u7248\u9009\u62e9\u6027\u5fc5\u4fee\u4e8c___\u6d1b\u4f26\u5179\u529b\u7684\u5927\u5c0f", "width": 1}, {"color": "#CCCCCC", "from": "\u6559\u79d1\u7248\u9009\u62e9\u6027\u5fc5\u4fee\u4e8c__1.3\u6d1b\u4f26\u5179\u529b", "to": "\u6559\u79d1\u7248\u9009\u62e9\u6027\u5fc5\u4fee\u4e8c___\u5e26\u7535\u7c92\u5b50\u5728\u5300\u5f3a\u78c1\u573a\u4e2d\u7684\u8fd0\u52a8", "width": 1}, {"color": "#AAAAAA", "from": "\u6559\u79d1\u7248\u9009\u62e9\u6027\u5fc5\u4fee\u4e8c_\u7b2c1\u7ae0 \u78c1\u573a\u5bf9\u7535\u6d41\u7684\u4f5c\u7528", "to": "\u6559\u79d1\u7248\u9009\u62e9\u6027\u5fc5\u4fee\u4e8c__1.4\u6d1b\u4f26\u5179\u529b\u7684\u5e94\u7528", "width": 2}, {"color": "#CCCCCC", "from": "\u6559\u79d1\u7248\u9009\u62e9\u6027\u5fc5\u4fee\u4e8c__1.4\u6d1b\u4f26\u5179\u529b\u7684\u5e94\u7528", "to": "\u6559\u79d1\u7248\u9009\u62e9\u6027\u5fc5\u4fee\u4e8c__1.4\u6d1b\u4f26\u5179\u529b\u7684\u5e94\u7528_\u5229\u7528\u78c1\u573a\u63a7\u5236\u5e26\u7535\u7c92\u5b50\u8fd0\u52a8", "width": 1}, {"color": "#CCCCCC", "from": "\u6559\u79d1\u7248\u9009\u62e9\u6027\u5fc5\u4fee\u4e8c__1.4\u6d1b\u4f26\u5179\u529b\u7684\u5e94\u7528", "to": "\u6559\u79d1\u7248\u9009\u62e9\u6027\u5fc5\u4fee\u4e8c___\u8d28\u8c31\u4eea", "width": 1}, {"color": "#CCCCCC", "from": "\u6559\u79d1\u7248\u9009\u62e9\u6027\u5fc5\u4fee\u4e8c__1.4\u6d1b\u4f26\u5179\u529b\u7684\u5e94\u7528", "to": "\u6559\u79d1\u7248\u9009\u62e9\u6027\u5fc5\u4fee\u4e8c___\u56de\u65cb\u52a0\u901f\u5668", "width": 1}, {"color": "#888888", "from": "\u6559\u79d1\u7248\u9009\u62e9\u6027\u5fc5\u4fee\u4e8c", "to": "\u6559\u79d1\u7248\u9009\u62e9\u6027\u5fc5\u4fee\u4e8c_\u7b2c2\u7ae0 \u7535\u78c1\u611f\u5e94\u673a\u5668\u5e94\u7528", "width": 3}, {"color": "#AAAAAA", "from": "\u6559\u79d1\u7248\u9009\u62e9\u6027\u5fc5\u4fee\u4e8c_\u7b2c2\u7ae0 \u7535\u78c1\u611f\u5e94\u673a\u5668\u5e94\u7528", "to": "\u6559\u79d1\u7248\u9009\u62e9\u6027\u5fc5\u4fee\u4e8c_\u7b2c2\u7ae0 \u7535\u78c1\u611f\u5e94\u673a\u5668\u5e94\u7528_2.1\u695e\u6b21\u5b9a\u5f8b", "width": 2}, {"color": "#CCCCCC", "from": "\u6559\u79d1\u7248\u9009\u62e9\u6027\u5fc5\u4fee\u4e8c_\u7b2c2\u7ae0 \u7535\u78c1\u611f\u5e94\u673a\u5668\u5e94\u7528_2.1\u695e\u6b21\u5b9a\u5f8b", "to": "\u6559\u79d1\u7248\u9009\u62e9\u6027\u5fc5\u4fee\u4e8c_\u7b2c2\u7ae0 \u7535\u78c1\u611f\u5e94\u673a\u5668\u5e94\u7528_2.1\u695e\u6b21\u5b9a\u5f8b_\u53f3\u624b\u5b9a\u5219", "width": 1}, {"color": "#CCCCCC", "from": "\u6559\u79d1\u7248\u9009\u62e9\u6027\u5fc5\u4fee\u4e8c_\u7b2c2\u7ae0 \u7535\u78c1\u611f\u5e94\u673a\u5668\u5e94\u7528_2.1\u695e\u6b21\u5b9a\u5f8b", "to": "\u6559\u79d1\u7248\u9009\u62e9\u6027\u5fc5\u4fee\u4e8c___\u695e\u6b21\u5b9a\u5f8b", "width": 1}, {"color": "#CCCCCC", "from": "\u6559\u79d1\u7248\u9009\u62e9\u6027\u5fc5\u4fee\u4e8c_\u7b2c2\u7ae0 \u7535\u78c1\u611f\u5e94\u673a\u5668\u5e94\u7528_2.1\u695e\u6b21\u5b9a\u5f8b", "to": "\u6559\u79d1\u7248\u9009\u62e9\u6027\u5fc5\u4fee\u4e8c___\u695e\u6b21\u5b9a\u5f8b\u7684\u5e94\u7528", "width": 1}, {"color": "#AAAAAA", "from": "\u6559\u79d1\u7248\u9009\u62e9\u6027\u5fc5\u4fee\u4e8c_\u7b2c2\u7ae0 \u7535\u78c1\u611f\u5e94\u673a\u5668\u5e94\u7528", "to": "\u6559\u79d1\u7248\u9009\u62e9\u6027\u5fc5\u4fee\u4e8c__2.2\u6cd5\u62c9\u7b2c\u7535\u78c1\u611f\u5e94\u5b9a\u5f8b", "width": 2}, {"color": "#CCCCCC", "from": "\u6559\u79d1\u7248\u9009\u62e9\u6027\u5fc5\u4fee\u4e8c__2.2\u6cd5\u62c9\u7b2c\u7535\u78c1\u611f\u5e94\u5b9a\u5f8b", "to": "\u6559\u79d1\u7248\u9009\u62e9\u6027\u5fc5\u4fee\u4e8c__2.2\u6cd5\u62c9\u7b2c\u7535\u78c1\u611f\u5e94\u5b9a\u5f8b_\u7535\u78c1\u611f\u5e94\u5b9a\u5f8b", "width": 1}, {"color": "#CCCCCC", "from": "\u6559\u79d1\u7248\u9009\u62e9\u6027\u5fc5\u4fee\u4e8c__2.2\u6cd5\u62c9\u7b2c\u7535\u78c1\u611f\u5e94\u5b9a\u5f8b", "to": "\u6559\u79d1\u7248\u9009\u62e9\u6027\u5fc5\u4fee\u4e8c___\u5bfc\u4f53\u5207\u5272\u78c1\u611f\u7ebf\u7684\u611f\u5e94\u7535\u52a8\u52bf", "width": 1}, {"color": "#AAAAAA", "from": "\u6559\u79d1\u7248\u9009\u62e9\u6027\u5fc5\u4fee\u4e8c_\u7b2c2\u7ae0 \u7535\u78c1\u611f\u5e94\u673a\u5668\u5e94\u7528", "to": "\u6559\u79d1\u7248\u9009\u62e9\u6027\u5fc5\u4fee\u4e8c__2.3\u6da1\u6d41 \u7535\u78c1\u963b\u5c3c \u7535\u78c1\u9a71\u52a8", "width": 2}, {"color": "#CCCCCC", "from": "\u6559\u79d1\u7248\u9009\u62e9\u6027\u5fc5\u4fee\u4e8c__2.3\u6da1\u6d41 \u7535\u78c1\u963b\u5c3c \u7535\u78c1\u9a71\u52a8", "to": "\u6559\u79d1\u7248\u9009\u62e9\u6027\u5fc5\u4fee\u4e8c__2.3\u6da1\u6d41 \u7535\u78c1\u963b\u5c3c \u7535\u78c1\u9a71\u52a8_\u6da1\u6d41", "width": 1}, {"color": "#CCCCCC", "from": "\u6559\u79d1\u7248\u9009\u62e9\u6027\u5fc5\u4fee\u4e8c__2.3\u6da1\u6d41 \u7535\u78c1\u963b\u5c3c \u7535\u78c1\u9a71\u52a8", "to": "\u6559\u79d1\u7248\u9009\u62e9\u6027\u5fc5\u4fee\u4e8c___\u7535\u78c1\u963b\u5c3c\u548c\u7535\u78c1\u5236\u52a8", "width": 1}, {"color": "#CCCCCC", "from": "\u6559\u79d1\u7248\u9009\u62e9\u6027\u5fc5\u4fee\u4e8c__2.3\u6da1\u6d41 \u7535\u78c1\u963b\u5c3c \u7535\u78c1\u9a71\u52a8", "to": "\u6559\u79d1\u7248\u9009\u62e9\u6027\u5fc5\u4fee\u4e8c___\u7535\u78c1\u9a71\u52a8", "width": 1}, {"color": "#AAAAAA", "from": "\u6559\u79d1\u7248\u9009\u62e9\u6027\u5fc5\u4fee\u4e8c_\u7b2c2\u7ae0 \u7535\u78c1\u611f\u5e94\u673a\u5668\u5e94\u7528", "to": "\u6559\u79d1\u7248\u9009\u62e9\u6027\u5fc5\u4fee\u4e8c__2.4\u81ea\u611f", "width": 2}, {"color": "#CCCCCC", "from": "\u6559\u79d1\u7248\u9009\u62e9\u6027\u5fc5\u4fee\u4e8c__2.4\u81ea\u611f", "to": "\u6559\u79d1\u7248\u9009\u62e9\u6027\u5fc5\u4fee\u4e8c__2.4\u81ea\u611f_\u81ea\u611f\u73b0\u8c61", "width": 1}, {"color": "#CCCCCC", "from": "\u6559\u79d1\u7248\u9009\u62e9\u6027\u5fc5\u4fee\u4e8c__2.4\u81ea\u611f", "to": "\u6559\u79d1\u7248\u9009\u62e9\u6027\u5fc5\u4fee\u4e8c___\u81ea\u611f\u7cfb\u6570", "width": 1}, {"color": "#CCCCCC", "from": "\u6559\u79d1\u7248\u9009\u62e9\u6027\u5fc5\u4fee\u4e8c__2.4\u81ea\u611f", "to": "\u6559\u79d1\u7248\u9009\u62e9\u6027\u5fc5\u4fee\u4e8c___\u81ea\u611f\u73b0\u8c61\u7684\u5e94\u7528\u2014\u2014\u65e5\u5149\u706f", "width": 1}, {"color": "#888888", "from": "\u6559\u79d1\u7248\u9009\u62e9\u6027\u5fc5\u4fee\u4e8c", "to": "\u6559\u79d1\u7248\u9009\u62e9\u6027\u5fc5\u4fee\u4e8c_\u7b2c3\u7ae0 \u4ea4\u6d41\u7535", "width": 3}, {"color": "#AAAAAA", "from": "\u6559\u79d1\u7248\u9009\u62e9\u6027\u5fc5\u4fee\u4e8c_\u7b2c3\u7ae0 \u4ea4\u6d41\u7535", "to": "\u6559\u79d1\u7248\u9009\u62e9\u6027\u5fc5\u4fee\u4e8c_\u7b2c3\u7ae0 \u4ea4\u6d41\u7535_3.1\u4ea4\u53d8\u7535\u6d41", "width": 2}, {"color": "#CCCCCC", "from": "\u6559\u79d1\u7248\u9009\u62e9\u6027\u5fc5\u4fee\u4e8c_\u7b2c3\u7ae0 \u4ea4\u6d41\u7535_3.1\u4ea4\u53d8\u7535\u6d41", "to": "\u6559\u79d1\u7248\u9009\u62e9\u6027\u5fc5\u4fee\u4e8c_\u7b2c3\u7ae0 \u4ea4\u6d41\u7535_3.1\u4ea4\u53d8\u7535\u6d41_\u8ba4\u8bc6\u4ea4\u53d8\u7535\u6d41", "width": 1}, {"color": "#CCCCCC", "from": "\u6559\u79d1\u7248\u9009\u62e9\u6027\u5fc5\u4fee\u4e8c_\u7b2c3\u7ae0 \u4ea4\u6d41\u7535_3.1\u4ea4\u53d8\u7535\u6d41", "to": "\u6559\u79d1\u7248\u9009\u62e9\u6027\u5fc5\u4fee\u4e8c___\u6b63\u5f26\u4ea4\u6d41\u7535\u7684\u4ea7\u751f\u548c\u53d8\u5316\u89c4\u5f8b", "width": 1}, {"color": "#CCCCCC", "from": "\u6559\u79d1\u7248\u9009\u62e9\u6027\u5fc5\u4fee\u4e8c_\u7b2c3\u7ae0 \u4ea4\u6d41\u7535_3.1\u4ea4\u53d8\u7535\u6d41", "to": "\u6559\u79d1\u7248\u9009\u62e9\u6027\u5fc5\u4fee\u4e8c___\u53d1\u7535\u673a\u4e0e\u7535\u52a8\u673a\u4e2d\u7684\u80fd\u91cf\u8f6c\u5316", "width": 1}, {"color": "#AAAAAA", "from": "\u6559\u79d1\u7248\u9009\u62e9\u6027\u5fc5\u4fee\u4e8c_\u7b2c3\u7ae0 \u4ea4\u6d41\u7535", "to": "\u6559\u79d1\u7248\u9009\u62e9\u6027\u5fc5\u4fee\u4e8c__3.2\u6b63\u5f26\u4ea4\u53d8\u7535\u6d41\u7684\u63cf\u8ff0", "width": 2}, {"color": "#CCCCCC", "from": "\u6559\u79d1\u7248\u9009\u62e9\u6027\u5fc5\u4fee\u4e8c__3.2\u6b63\u5f26\u4ea4\u53d8\u7535\u6d41\u7684\u63cf\u8ff0", "to": "\u6559\u79d1\u7248\u9009\u62e9\u6027\u5fc5\u4fee\u4e8c__3.2\u6b63\u5f26\u4ea4\u53d8\u7535\u6d41\u7684\u63cf\u8ff0_\u5468\u671f\u548c\u9891\u7387", "width": 1}, {"color": "#CCCCCC", "from": "\u6559\u79d1\u7248\u9009\u62e9\u6027\u5fc5\u4fee\u4e8c__3.2\u6b63\u5f26\u4ea4\u53d8\u7535\u6d41\u7684\u63cf\u8ff0", "to": "\u6559\u79d1\u7248\u9009\u62e9\u6027\u5fc5\u4fee\u4e8c___\u5cf0\u503c \u6709\u6548\u503c", "width": 1}, {"color": "#AAAAAA", "from": "\u6559\u79d1\u7248\u9009\u62e9\u6027\u5fc5\u4fee\u4e8c_\u7b2c3\u7ae0 \u4ea4\u6d41\u7535", "to": "\u6559\u79d1\u7248\u9009\u62e9\u6027\u5fc5\u4fee\u4e8c__3.3\u53d8\u538b\u5668", "width": 2}, {"color": "#CCCCCC", "from": "\u6559\u79d1\u7248\u9009\u62e9\u6027\u5fc5\u4fee\u4e8c__3.3\u53d8\u538b\u5668", "to": "\u6559\u79d1\u7248\u9009\u62e9\u6027\u5fc5\u4fee\u4e8c__3.3\u53d8\u538b\u5668_\u53d8\u538b\u5668\u7684\u7ed3\u6784\u4e0e\u539f\u7406", "width": 1}, {"color": "#CCCCCC", "from": "\u6559\u79d1\u7248\u9009\u62e9\u6027\u5fc5\u4fee\u4e8c__3.3\u53d8\u538b\u5668", "to": "\u6559\u79d1\u7248\u9009\u62e9\u6027\u5fc5\u4fee\u4e8c___\u53d8\u538b\u5668\u7684\u7535\u538b\u4e0e\u531d\u6570\u7684\u5173\u7cfb", "width": 1}, {"color": "#CCCCCC", "from": "\u6559\u79d1\u7248\u9009\u62e9\u6027\u5fc5\u4fee\u4e8c__3.3\u53d8\u538b\u5668", "to": "\u6559\u79d1\u7248\u9009\u62e9\u6027\u5fc5\u4fee\u4e8c___\u7535\u538b\u4e92\u611f\u5668\u548c\u7535\u6d41\u4e92\u611f\u5668", "width": 1}, {"color": "#AAAAAA", "from": "\u6559\u79d1\u7248\u9009\u62e9\u6027\u5fc5\u4fee\u4e8c_\u7b2c3\u7ae0 \u4ea4\u6d41\u7535", "to": "\u6559\u79d1\u7248\u9009\u62e9\u6027\u5fc5\u4fee\u4e8c__3.4\u7535\u80fd\u7684\u8f93\u9001", "width": 2}, {"color": "#CCCCCC", "from": "\u6559\u79d1\u7248\u9009\u62e9\u6027\u5fc5\u4fee\u4e8c__3.4\u7535\u80fd\u7684\u8f93\u9001", "to": "\u6559\u79d1\u7248\u9009\u62e9\u6027\u5fc5\u4fee\u4e8c__3.4\u7535\u80fd\u7684\u8f93\u9001_\u7535\u80fd\u8f93\u9001\u4e2d\u7684\u7535\u538b\u635f\u5931\u548c\u7535\u80fd\u635f\u8017", "width": 1}, {"color": "#CCCCCC", "from": "\u6559\u79d1\u7248\u9009\u62e9\u6027\u5fc5\u4fee\u4e8c__3.4\u7535\u80fd\u7684\u8f93\u9001", "to": "\u6559\u79d1\u7248\u9009\u62e9\u6027\u5fc5\u4fee\u4e8c___\u8fdc\u8ddd\u79bb\u8f93\u7535\u7cfb\u7edf", "width": 1}, {"color": "#CCCCCC", "from": "\u6559\u79d1\u7248\u9009\u62e9\u6027\u5fc5\u4fee\u4e8c__3.4\u7535\u80fd\u7684\u8f93\u9001", "to": "\u6559\u79d1\u7248\u9009\u62e9\u6027\u5fc5\u4fee\u4e8c___\u76f4\u6d41\u8f93\u7535", "width": 1}, {"color": "#888888", "from": "\u6559\u79d1\u7248\u9009\u62e9\u6027\u5fc5\u4fee\u4e8c", "to": "\u6559\u79d1\u7248\u9009\u62e9\u6027\u5fc5\u4fee\u4e8c_\u7b2c4\u7ae0 \u7535\u78c1\u632f\u8361\u4e0e\u7535\u78c1\u6ce2", "width": 3}, {"color": "#AAAAAA", "from": "\u6559\u79d1\u7248\u9009\u62e9\u6027\u5fc5\u4fee\u4e8c_\u7b2c4\u7ae0 \u7535\u78c1\u632f\u8361\u4e0e\u7535\u78c1\u6ce2", "to": "\u6559\u79d1\u7248\u9009\u62e9\u6027\u5fc5\u4fee\u4e8c_\u7b2c4\u7ae0 \u7535\u78c1\u632f\u8361\u4e0e\u7535\u78c1\u6ce2_4.1\u7535\u78c1\u632f\u8361", "width": 2}, {"color": "#CCCCCC", "from": "\u6559\u79d1\u7248\u9009\u62e9\u6027\u5fc5\u4fee\u4e8c_\u7b2c4\u7ae0 \u7535\u78c1\u632f\u8361\u4e0e\u7535\u78c1\u6ce2_4.1\u7535\u78c1\u632f\u8361", "to": "\u6559\u79d1\u7248\u9009\u62e9\u6027\u5fc5\u4fee\u4e8c_\u7b2c4\u7ae0 \u7535\u78c1\u632f\u8361\u4e0e\u7535\u78c1\u6ce2_4.1\u7535\u78c1\u632f\u8361_LC\u632f\u8361\u7535\u8def\u548c\u632f\u8361\u7535\u6d41", "width": 1}, {"color": "#CCCCCC", "from": "\u6559\u79d1\u7248\u9009\u62e9\u6027\u5fc5\u4fee\u4e8c_\u7b2c4\u7ae0 \u7535\u78c1\u632f\u8361\u4e0e\u7535\u78c1\u6ce2_4.1\u7535\u78c1\u632f\u8361", "to": "\u6559\u79d1\u7248\u9009\u62e9\u6027\u5fc5\u4fee\u4e8c___\u65e0\u963b\u5c3c\u632f\u8361\u548c\u963b\u5c3c\u632f\u8361", "width": 1}, {"color": "#CCCCCC", "from": "\u6559\u79d1\u7248\u9009\u62e9\u6027\u5fc5\u4fee\u4e8c_\u7b2c4\u7ae0 \u7535\u78c1\u632f\u8361\u4e0e\u7535\u78c1\u6ce2_4.1\u7535\u78c1\u632f\u8361", "to": "\u6559\u79d1\u7248\u9009\u62e9\u6027\u5fc5\u4fee\u4e8c___\u7535\u78c1\u632f\u8361\u7684\u5468\u671f\u548c\u9891\u7387", "width": 1}, {"color": "#AAAAAA", "from": "\u6559\u79d1\u7248\u9009\u62e9\u6027\u5fc5\u4fee\u4e8c_\u7b2c4\u7ae0 \u7535\u78c1\u632f\u8361\u4e0e\u7535\u78c1\u6ce2", "to": "\u6559\u79d1\u7248\u9009\u62e9\u6027\u5fc5\u4fee\u4e8c__4.2\u7535\u78c1\u6ce2", "width": 2}, {"color": "#CCCCCC", "from": "\u6559\u79d1\u7248\u9009\u62e9\u6027\u5fc5\u4fee\u4e8c__4.2\u7535\u78c1\u6ce2", "to": "\u6559\u79d1\u7248\u9009\u62e9\u6027\u5fc5\u4fee\u4e8c__4.2\u7535\u78c1\u6ce2_\u9ea6\u514b\u65af\u97e6\u7535\u78c1\u7406\u8bba\u7684\u4e24\u4e2a\u57fa\u672c\u5047\u8bbe", "width": 1}, {"color": "#CCCCCC", "from": "\u6559\u79d1\u7248\u9009\u62e9\u6027\u5fc5\u4fee\u4e8c__4.2\u7535\u78c1\u6ce2", "to": "\u6559\u79d1\u7248\u9009\u62e9\u6027\u5fc5\u4fee\u4e8c___\u7535\u78c1\u6ce2", "width": 1}, {"color": "#CCCCCC", "from": "\u6559\u79d1\u7248\u9009\u62e9\u6027\u5fc5\u4fee\u4e8c__4.2\u7535\u78c1\u6ce2", "to": "\u6559\u79d1\u7248\u9009\u62e9\u6027\u5fc5\u4fee\u4e8c___\u8d6b\u5179\u5b9e\u9a8c\u8bc1\u5b9e\u4e86\u7535\u78c1\u6ce2\u7684\u5b58\u5728", "width": 1}, {"color": "#CCCCCC", "from": "\u6559\u79d1\u7248\u9009\u62e9\u6027\u5fc5\u4fee\u4e8c__4.2\u7535\u78c1\u6ce2", "to": "\u6559\u79d1\u7248\u9009\u62e9\u6027\u5fc5\u4fee\u4e8c___\u9ea6\u514b\u65af\u97e6\u7406\u8bba\u5728\u7269\u7406\u5b66\u53d1\u5c55\u53f2\u4e0a\u7684\u610f\u4e49", "width": 1}, {"color": "#AAAAAA", "from": "\u6559\u79d1\u7248\u9009\u62e9\u6027\u5fc5\u4fee\u4e8c_\u7b2c4\u7ae0 \u7535\u78c1\u632f\u8361\u4e0e\u7535\u78c1\u6ce2", "to": "\u6559\u79d1\u7248\u9009\u62e9\u6027\u5fc5\u4fee\u4e8c__4.3\u7535\u78c1\u6ce2\u8c31", "width": 2}, {"color": "#CCCCCC", "from": "\u6559\u79d1\u7248\u9009\u62e9\u6027\u5fc5\u4fee\u4e8c__4.3\u7535\u78c1\u6ce2\u8c31", "to": "\u6559\u79d1\u7248\u9009\u62e9\u6027\u5fc5\u4fee\u4e8c__4.3\u7535\u78c1\u6ce2\u8c31_\u53ef\u89c1\u5149", "width": 1}, {"color": "#CCCCCC", "from": "\u6559\u79d1\u7248\u9009\u62e9\u6027\u5fc5\u4fee\u4e8c__4.3\u7535\u78c1\u6ce2\u8c31", "to": "\u6559\u79d1\u7248\u9009\u62e9\u6027\u5fc5\u4fee\u4e8c___\u65e0\u7ebf\u7535\u6ce2", "width": 1}, {"color": "#CCCCCC", "from": "\u6559\u79d1\u7248\u9009\u62e9\u6027\u5fc5\u4fee\u4e8c__4.3\u7535\u78c1\u6ce2\u8c31", "to": "\u6559\u79d1\u7248\u9009\u62e9\u6027\u5fc5\u4fee\u4e8c___\u7ea2\u5916\u7ebf", "width": 1}, {"color": "#CCCCCC", "from": "\u6559\u79d1\u7248\u9009\u62e9\u6027\u5fc5\u4fee\u4e8c__4.3\u7535\u78c1\u6ce2\u8c31", "to": "\u6559\u79d1\u7248\u9009\u62e9\u6027\u5fc5\u4fee\u4e8c___\u7d2b\u5916\u7ebf", "width": 1}, {"color": "#CCCCCC", "from": "\u6559\u79d1\u7248\u9009\u62e9\u6027\u5fc5\u4fee\u4e8c__4.3\u7535\u78c1\u6ce2\u8c31", "to": "\u6559\u79d1\u7248\u9009\u62e9\u6027\u5fc5\u4fee\u4e8c___X\u5c04\u7ebf", "width": 1}, {"color": "#CCCCCC", "from": "\u6559\u79d1\u7248\u9009\u62e9\u6027\u5fc5\u4fee\u4e8c__4.3\u7535\u78c1\u6ce2\u8c31", "to": "\u6559\u79d1\u7248\u9009\u62e9\u6027\u5fc5\u4fee\u4e8c___\u03b3\u5c04\u7ebf", "width": 1}, {"color": "#AAAAAA", "from": "\u6559\u79d1\u7248\u9009\u62e9\u6027\u5fc5\u4fee\u4e8c_\u7b2c4\u7ae0 \u7535\u78c1\u632f\u8361\u4e0e\u7535\u78c1\u6ce2", "to": "\u6559\u79d1\u7248\u9009\u62e9\u6027\u5fc5\u4fee\u4e8c__4.4\u65e0\u7ebf\u7535\u6ce2\u7684\u53d1\u5c04\u3001\u4f20\u64ad\u4e0e\u63a5\u53d7", "width": 2}, {"color": "#CCCCCC", "from": "\u6559\u79d1\u7248\u9009\u62e9\u6027\u5fc5\u4fee\u4e8c__4.4\u65e0\u7ebf\u7535\u6ce2\u7684\u53d1\u5c04\u3001\u4f20\u64ad\u4e0e\u63a5\u53d7", "to": "\u6559\u79d1\u7248\u9009\u62e9\u6027\u5fc5\u4fee\u4e8c__4.4\u65e0\u7ebf\u7535\u6ce2\u7684\u53d1\u5c04\u3001\u4f20\u64ad\u4e0e\u63a5\u53d7_\u65e0\u7ebf\u7535\u6ce2\u7684\u53d1\u5c04", "width": 1}, {"color": "#CCCCCC", "from": "\u6559\u79d1\u7248\u9009\u62e9\u6027\u5fc5\u4fee\u4e8c__4.4\u65e0\u7ebf\u7535\u6ce2\u7684\u53d1\u5c04\u3001\u4f20\u64ad\u4e0e\u63a5\u53d7", "to": "\u6559\u79d1\u7248\u9009\u62e9\u6027\u5fc5\u4fee\u4e8c___\u65e0\u7ebf\u7535\u6ce2\u7684\u4f20\u64ad", "width": 1}, {"color": "#CCCCCC", "from": "\u6559\u79d1\u7248\u9009\u62e9\u6027\u5fc5\u4fee\u4e8c__4.4\u65e0\u7ebf\u7535\u6ce2\u7684\u53d1\u5c04\u3001\u4f20\u64ad\u4e0e\u63a5\u53d7", "to": "\u6559\u79d1\u7248\u9009\u62e9\u6027\u5fc5\u4fee\u4e8c___\u65e0\u7ebf\u7535\u6ce2\u7684\u63a5\u53d7", "width": 1}, {"color": "#AAAAAA", "from": "\u6559\u79d1\u7248\u9009\u62e9\u6027\u5fc5\u4fee\u4e8c_\u7b2c4\u7ae0 \u7535\u78c1\u632f\u8361\u4e0e\u7535\u78c1\u6ce2", "to": "\u6559\u79d1\u7248\u9009\u62e9\u6027\u5fc5\u4fee\u4e8c__4.5\u65e0\u7ebf\u7535\u6ce2\u4e0e\u79fb\u52a8\u4e92\u8054\u7f51", "width": 2}, {"color": "#CCCCCC", "from": "\u6559\u79d1\u7248\u9009\u62e9\u6027\u5fc5\u4fee\u4e8c__4.5\u65e0\u7ebf\u7535\u6ce2\u4e0e\u79fb\u52a8\u4e92\u8054\u7f51", "to": "\u6559\u79d1\u7248\u9009\u62e9\u6027\u5fc5\u4fee\u4e8c__4.5\u65e0\u7ebf\u7535\u6ce2\u4e0e\u79fb\u52a8\u4e92\u8054\u7f51_\u7535\u78c1\u6ce2\u4e0e\u4fe1\u606f\u6280\u672f\u7684\u6f14\u53d8", "width": 1}, {"color": "#CCCCCC", "from": "\u6559\u79d1\u7248\u9009\u62e9\u6027\u5fc5\u4fee\u4e8c__4.5\u65e0\u7ebf\u7535\u6ce2\u4e0e\u79fb\u52a8\u4e92\u8054\u7f51", "to": "\u6559\u79d1\u7248\u9009\u62e9\u6027\u5fc5\u4fee\u4e8c___\u8702\u7a9d\u7cfb\u7edf", "width": 1}, {"color": "#CCCCCC", "from": "\u6559\u79d1\u7248\u9009\u62e9\u6027\u5fc5\u4fee\u4e8c__4.5\u65e0\u7ebf\u7535\u6ce2\u4e0e\u79fb\u52a8\u4e92\u8054\u7f51", "to": "\u6559\u79d1\u7248\u9009\u62e9\u6027\u5fc5\u4fee\u4e8c___\u7f51\u7edc\u534f\u8bae", "width": 1}, {"color": "#CCCCCC", "from": "\u6559\u79d1\u7248\u9009\u62e9\u6027\u5fc5\u4fee\u4e8c__4.5\u65e0\u7ebf\u7535\u6ce2\u4e0e\u79fb\u52a8\u4e92\u8054\u7f51", "to": "\u6559\u79d1\u7248\u9009\u62e9\u6027\u5fc5\u4fee\u4e8c___\u7528\u7535\u78c1\u6ce2\u4f20\u9012\u4e8c\u8fdb\u5236\u6570\u636e", "width": 1}, {"color": "#888888", "from": "\u6559\u79d1\u7248\u9009\u62e9\u6027\u5fc5\u4fee\u4e8c", "to": "\u6559\u79d1\u7248\u9009\u62e9\u6027\u5fc5\u4fee\u4e8c_\u7b2c5\u7ae0\u4f20\u611f\u5668", "width": 3}, {"color": "#AAAAAA", "from": "\u6559\u79d1\u7248\u9009\u62e9\u6027\u5fc5\u4fee\u4e8c_\u7b2c5\u7ae0\u4f20\u611f\u5668", "to": "\u6559\u79d1\u7248\u9009\u62e9\u6027\u5fc5\u4fee\u4e8c_\u7b2c5\u7ae0\u4f20\u611f\u5668_5.1\u8ba4\u8bc6\u4f20\u611f\u5668", "width": 2}, {"color": "#CCCCCC", "from": "\u6559\u79d1\u7248\u9009\u62e9\u6027\u5fc5\u4fee\u4e8c_\u7b2c5\u7ae0\u4f20\u611f\u5668_5.1\u8ba4\u8bc6\u4f20\u611f\u5668", "to": "\u6559\u79d1\u7248\u9009\u62e9\u6027\u5fc5\u4fee\u4e8c_\u7b2c5\u7ae0\u4f20\u611f\u5668_5.1\u8ba4\u8bc6\u4f20\u611f\u5668_\u4ec0\u4e48\u662f\u4f20\u611f\u5668", "width": 1}, {"color": "#CCCCCC", "from": "\u6559\u79d1\u7248\u9009\u62e9\u6027\u5fc5\u4fee\u4e8c_\u7b2c5\u7ae0\u4f20\u611f\u5668_5.1\u8ba4\u8bc6\u4f20\u611f\u5668", "to": "\u6559\u79d1\u7248\u9009\u62e9\u6027\u5fc5\u4fee\u4e8c___\u4f20\u611f\u5668\u7684\u7ed3\u6784", "width": 1}, {"color": "#CCCCCC", "from": "\u6559\u79d1\u7248\u9009\u62e9\u6027\u5fc5\u4fee\u4e8c_\u7b2c5\u7ae0\u4f20\u611f\u5668_5.1\u8ba4\u8bc6\u4f20\u611f\u5668", "to": "\u6559\u79d1\u7248\u9009\u62e9\u6027\u5fc5\u4fee\u4e8c___\u4f20\u611f\u5668\u7684\u5206\u7c7by", "width": 1}, {"color": "#AAAAAA", "from": "\u6559\u79d1\u7248\u9009\u62e9\u6027\u5fc5\u4fee\u4e8c_\u7b2c5\u7ae0\u4f20\u611f\u5668", "to": "\u6559\u79d1\u7248\u9009\u62e9\u6027\u5fc5\u4fee\u4e8c__5.2\u5e38\u89c1\u4f20\u611f\u5668\u7684\u5de5\u4f5c\u539f\u7406", "width": 2}, {"color": "#CCCCCC", "from": "\u6559\u79d1\u7248\u9009\u62e9\u6027\u5fc5\u4fee\u4e8c__5.2\u5e38\u89c1\u4f20\u611f\u5668\u7684\u5de5\u4f5c\u539f\u7406", "to": "\u6559\u79d1\u7248\u9009\u62e9\u6027\u5fc5\u4fee\u4e8c__5.2\u5e38\u89c1\u4f20\u611f\u5668\u7684\u5de5\u4f5c\u539f\u7406_\u6e29\u5ea6\u4f20\u611f\u5668", "width": 1}, {"color": "#CCCCCC", "from": "\u6559\u79d1\u7248\u9009\u62e9\u6027\u5fc5\u4fee\u4e8c__5.2\u5e38\u89c1\u4f20\u611f\u5668\u7684\u5de5\u4f5c\u539f\u7406", "to": "\u6559\u79d1\u7248\u9009\u62e9\u6027\u5fc5\u4fee\u4e8c___\u5149\u4f20\u611f\u5668", "width": 1}, {"color": "#CCCCCC", "from": "\u6559\u79d1\u7248\u9009\u62e9\u6027\u5fc5\u4fee\u4e8c__5.2\u5e38\u89c1\u4f20\u611f\u5668\u7684\u5de5\u4f5c\u539f\u7406", "to": "\u6559\u79d1\u7248\u9009\u62e9\u6027\u5fc5\u4fee\u4e8c___\u529b\u4f20\u611f\u5668", "width": 1}, {"color": "#AAAAAA", "from": "\u6559\u79d1\u7248\u9009\u62e9\u6027\u5fc5\u4fee\u4e8c_\u7b2c5\u7ae0\u4f20\u611f\u5668", "to": "\u6559\u79d1\u7248\u9009\u62e9\u6027\u5fc5\u4fee\u4e8c__5.3\u4f20\u611f\u5668\u7684\u5e94\u7528\u4e3e\u4f8b", "width": 2}, {"color": "#CCCCCC", "from": "\u6559\u79d1\u7248\u9009\u62e9\u6027\u5fc5\u4fee\u4e8c__5.3\u4f20\u611f\u5668\u7684\u5e94\u7528\u4e3e\u4f8b", "to": "\u6559\u79d1\u7248\u9009\u62e9\u6027\u5fc5\u4fee\u4e8c__5.3\u4f20\u611f\u5668\u7684\u5e94\u7528\u4e3e\u4f8b_\u6e29\u5ea6\u4f20\u611f\u5668\u7684\u5e94\u7528\u2014\u2014\u7535\u71a8\u6597", "width": 1}, {"color": "#CCCCCC", "from": "\u6559\u79d1\u7248\u9009\u62e9\u6027\u5fc5\u4fee\u4e8c__5.3\u4f20\u611f\u5668\u7684\u5e94\u7528\u4e3e\u4f8b", "to": "\u6559\u79d1\u7248\u9009\u62e9\u6027\u5fc5\u4fee\u4e8c___\u6e29\u5ea6\u4f20\u611f\u5668\u7684\u5e94\u7528\u2014\u2014\u7535\u996d\u9505", "width": 1}, {"color": "#CCCCCC", "from": "\u6559\u79d1\u7248\u9009\u62e9\u6027\u5fc5\u4fee\u4e8c__5.3\u4f20\u611f\u5668\u7684\u5e94\u7528\u4e3e\u4f8b", "to": "\u6559\u79d1\u7248\u9009\u62e9\u6027\u5fc5\u4fee\u4e8c___\u5149\u4f20\u611f\u5668\u7684\u5e94\u7528\u2014\u2014\u706b\u707e\u62a5\u8b66\u5668", "width": 1}, {"color": "#CCCCCC", "from": "\u6559\u79d1\u7248\u9009\u62e9\u6027\u5fc5\u4fee\u4e8c__5.3\u4f20\u611f\u5668\u7684\u5e94\u7528\u4e3e\u4f8b", "to": "\u6559\u79d1\u7248\u9009\u62e9\u6027\u5fc5\u4fee\u4e8c___\u5404\u79cd\u4f20\u611f\u5668\u7684\u5e94\u7528\u2014\u2014\u6c7d\u8f66", "width": 1}, {"color": "#AAAAAA", "from": "\u6559\u79d1\u7248\u9009\u62e9\u6027\u5fc5\u4fee\u4e8c_\u7b2c5\u7ae0\u4f20\u611f\u5668", "to": "\u6559\u79d1\u7248\u9009\u62e9\u6027\u5fc5\u4fee\u4e8c__5.4\u81ea\u5236\u7b80\u5355\u7684\u63a7\u5236\u7535\u8def", "width": 2}, {"color": "#CCCCCC", "from": "\u6559\u79d1\u7248\u9009\u62e9\u6027\u5fc5\u4fee\u4e8c__5.4\u81ea\u5236\u7b80\u5355\u7684\u63a7\u5236\u7535\u8def", "to": "\u6559\u79d1\u7248\u9009\u62e9\u6027\u5fc5\u4fee\u4e8c__5.4\u81ea\u5236\u7b80\u5355\u7684\u63a7\u5236\u7535\u8def_\u5149\u63a7LED\u706f", "width": 1}, {"color": "#CCCCCC", "from": "\u6559\u79d1\u7248\u9009\u62e9\u6027\u5fc5\u4fee\u4e8c__5.4\u81ea\u5236\u7b80\u5355\u7684\u63a7\u5236\u7535\u8def", "to": "\u6559\u79d1\u7248\u9009\u62e9\u6027\u5fc5\u4fee\u4e8c___\u6e29\u5ea6\u62a5\u8b66\u5668", "width": 1}]);
+
+                  nodeColors = {};
+                  allNodes = nodes.get({ returnType: "Object" });
+                  for (nodeId in allNodes) {
+                    nodeColors[nodeId] = allNodes[nodeId].color;
+                  }
+                  allEdges = edges.get({ returnType: "Object" });
+                  // adding nodes and edges to the graph
+                  data = {nodes: nodes, edges: edges};
+
+                  var options = {
+                      "physics": {
+                          "enabled": true,
+                          "barnesHut": {
+                              "gravitationalConstant": -25000,
+                              "centralGravity": 0.05,
+                              "springLength": 500,
+                              "springConstant": 0.005,
+                              "damping": 0.3,
+                              "avoidOverlap": 1
+                          },
+                          "stabilization": {
+                              "enabled": true,
+                              "iterations": 5000
+                          }
+                      },
+                      "interaction": {
+                          "dragNodes": true,
+                          "dragView": true,
+                          "zoomView": true
+                      },
+                      "nodes": {
+                          "font": {
+                              "size": 48,
+                              "face": "MicrosoftYaHei"
+                          },
+                          "margin": 50,
+                          "borderWidth": 3,
+                          "widthConstraint": {
+                              "minimum": 200,
+                              "maximum": 500
+                          },
+                          "heightConstraint": {
+                              "minimum": 80
+                          },
+                          "size": 30,
+                          "scaling": {
+                              "label": {
+                                  "enabled": false
+                              }
+                          }
+                      },
+                      "edges": {
+                          "smooth": {
+                              "type": "continuous",
+                              "roundness": 0.5
+                          },
+                          "length": 500
+                      },
+                      "layout": {
+                          "randomSeed": undefined,
+                          "improvedLayout": true,
+                          "hierarchical": {
+                              "enabled": false
+                          }
+                      }
+                  };
+
+                  
+
+
+                  
+
+                  network = new vis.Network(container, data, options);
+
+                  // 稳定化完成后停止物理引擎
+                  network.once('stabilizationIterationsDone', function() {
+                      network.setOptions({ physics: false });
+                      console.log('布局已稳定，物理引擎已停止');
+                  });
+
+                  
+
+                  
+
+                  
+
+
+                  
+
+                  return network;
+
+              }
+              drawGraph();
+        </script>
+    
+    <script type="text/javascript">
+        // 保存节点位置到localStorage
+        function savePositions() {
+            if (typeof network === 'undefined') {
+                console.error('Network对象未定义');
+                return;
+            }
+            
+            try {
+                const positions = network.getPositions();
+                const storageKey = 'graph_positions_' + document.title;
+                localStorage.setItem(storageKey, JSON.stringify(positions));
+                
+                // 显示保存成功提示
+                const btn = document.getElementById('save-btn');
+                if (btn) {
+                    const originalText = btn.innerHTML;
+                    btn.innerHTML = '✓ 已保存！';
+                    btn.style.background = '#4CAF50';
+                    setTimeout(() => {
+                        btn.innerHTML = originalText;
+                        btn.style.background = '#667eea';
+                    }, 2000);
+                }
+            } catch (error) {
+                console.error('保存位置时出错:', error);
+            }
+        }
+        
+        // 从localStorage恢复节点位置
+        function loadPositions() {
+            const storageKey = 'graph_positions_' + document.title;
+            const savedPositions = localStorage.getItem(storageKey);
+            if (savedPositions) {
+                try {
+                    const positions = JSON.parse(savedPositions);
+                    // 使用moveNode逐个设置节点位置
+                    for (let nodeId in positions) {
+                        network.moveNode(nodeId, positions[nodeId].x, positions[nodeId].y);
+                    }
+                    console.log('已恢复保存的布局');
+                } catch (error) {
+                    console.error('恢复布局失败:', error);
+                }
+            }
+        }
+        
+        // 重置到初始布局
+        function resetPositions() {
+            const storageKey = 'graph_positions_' + document.title;
+            localStorage.removeItem(storageKey);
+            location.reload();
+        }
+        
+        // 在network初始化后立即恢复位置和节点名称
+        network.on('stabilizationIterationsDone', function() {
+            setTimeout(() => {
+                loadPositions();
+                loadNodeLabels();
+            }, 100);
+        });
+        
+        // 页面加载完成后恢复位置和节点名称
+        window.addEventListener('load', function() {
+            setTimeout(() => {
+                loadPositions();
+                loadNodeLabels();
+            }, 500);
+        });
+        
+        // 双击节点编辑名称
+        network.on('doubleClick', function(params) {
+            if (params.nodes.length > 0) {
+                const nodeId = params.nodes[0];
+                const node = nodes.get(nodeId);
+                if (node) {
+                    showEditDialog(nodeId, node.label);
+                }
+            }
+        });
+        
+        function showEditDialog(nodeId, currentLabel) {
+            document.getElementById('edit-node-id').value = nodeId;
+            document.getElementById('edit-node-label').value = currentLabel;
+            document.getElementById('edit-dialog').style.display = 'flex';
+            document.getElementById('edit-node-label').focus();
+            document.getElementById('edit-node-label').select();
+        }
+        
+        function closeEditDialog() {
+            document.getElementById('edit-dialog').style.display = 'none';
+        }
+        
+        function saveNodeLabel() {
+            const nodeId = document.getElementById('edit-node-id').value;
+            const newLabel = document.getElementById('edit-node-label').value.trim();
+            if (newLabel) {
+                nodes.update({ id: nodeId, label: newLabel });
+                const storageKey = 'graph_labels_' + document.title;
+                let savedLabels = JSON.parse(localStorage.getItem(storageKey) || '{}');
+                savedLabels[nodeId] = newLabel;
+                localStorage.setItem(storageKey, JSON.stringify(savedLabels));
+                closeEditDialog();
+            }
+        }
+        
+        function loadNodeLabels() {
+            const storageKey = 'graph_labels_' + document.title;
+            const savedLabels = localStorage.getItem(storageKey);
+            if (savedLabels) {
+                try {
+                    const labels = JSON.parse(savedLabels);
+                    for (let nodeId in labels) {
+                        nodes.update({ id: nodeId, label: labels[nodeId] });
+                    }
+                } catch (error) {
+                    console.error('恢复节点名称失败:', error);
+                }
+            }
+        }
+        
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'Enter' && document.getElementById('edit-dialog').style.display === 'flex') {
+                saveNodeLabel();
+            }
+            if (e.key === 'Escape') {
+                closeEditDialog();
+            }
+        });
+    </script>
+    
+    <style>
+        .control-panel {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            z-index: 1000;
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+            transition: all 0.3s ease;
+        }
+        
+        .control-panel.minimized {
+            padding: 0;
+        }
+        
+        .control-panel.minimized .panel-content {
+            display: none;
+        }
+        
+        .panel-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px 15px;
+            cursor: pointer;
+            user-select: none;
+        }
+        
+        .panel-header h3 {
+            margin: 0;
+            font-size: 16px;
+            color: #333;
+        }
+        
+        .toggle-btn {
+            background: none;
+            border: none;
+            font-size: 20px;
+            cursor: pointer;
+            padding: 0;
+            width: 24px;
+            height: 24px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: transform 0.3s;
+        }
+        
+        .toggle-btn:hover {
+            transform: scale(1.2);
+        }
+        
+        .panel-content {
+            padding: 0 15px 15px 15px;
+        }
+        
+        .control-btn {
+            display: block;
+            width: 140px;
+            padding: 10px 15px;
+            margin: 5px 0;
+            border: none;
+            border-radius: 5px;
+            font-size: 14px;
+            font-weight: bold;
+            color: white;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-family: "Microsoft YaHei", Arial, sans-serif;
+        }
+        
+        #save-btn {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        }
+        
+        #reset-btn {
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+        }
+        
+        .control-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+        }
+        
+        .tip {
+            margin-top: 10px;
+            padding: 8px;
+            background: #f0f0f0;
+            border-radius: 5px;
+            font-size: 12px;
+            color: #666;
+            line-height: 1.4;
+        }
+        
+        .edit-dialog {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.5);
+            justify-content: center;
+            align-items: center;
+            z-index: 2000;
+        }
+        
+        .edit-dialog-content {
+            background: white;
+            padding: 25px;
+            border-radius: 15px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.3);
+            min-width: 350px;
+        }
+        
+        .edit-dialog-content h3 {
+            margin: 0 0 20px 0;
+            color: #333;
+            font-size: 18px;
+        }
+        
+        .edit-dialog-content input {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #ddd;
+            border-radius: 8px;
+            font-size: 16px;
+            margin-bottom: 20px;
+            box-sizing: border-box;
+        }
+        
+        .edit-dialog-content input:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+        
+        .edit-dialog-buttons {
+            display: flex;
+            gap: 10px;
+            justify-content: flex-end;
+        }
+        
+        .edit-dialog-buttons button {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        
+        .btn-save {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+        
+        .btn-cancel {
+            background: #e0e0e0;
+            color: #666;
+        }
+        
+        .edit-dialog-buttons button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+        }
+    </style>
+    
+    <script type="text/javascript">
+        function togglePanel() {
+            const panel = document.querySelector('.control-panel');
+            const toggleBtn = document.querySelector('.toggle-btn');
+            panel.classList.toggle('minimized');
+            
+            if (panel.classList.contains('minimized')) {
+                toggleBtn.innerHTML = '▼';
+            } else {
+                toggleBtn.innerHTML = '▲';
+            }
+        }
+    </script>
+    
+    <div class="control-panel">
+        <div class="panel-header" onclick="togglePanel()">
+            <h3>🎨 布局控制</h3>
+            <button class="toggle-btn">▲</button>
+        </div>
+        <div class="panel-content">
+            <button id="save-btn" class="control-btn" onclick="savePositions()">💾 保存当前布局</button>
+            <button id="reset-btn" class="control-btn" onclick="resetPositions()">🔄 恢复初始布局</button>
+            <div class="tip">
+                💡 拖动节点后点击"保存"<br>
+                下次打开会自动恢复您的布局<br>
+                📝 双击节点可修改名称
+            </div>
+        </div>
+    </div>
+    
+    <div id="edit-dialog" class="edit-dialog">
+        <div class="edit-dialog-content">
+            <h3>✏️ 编辑节点名称</h3>
+            <input type="hidden" id="edit-node-id">
+            <input type="text" id="edit-node-label" placeholder="输入新的节点名称">
+            <div class="edit-dialog-buttons">
+                <button class="btn-cancel" onclick="closeEditDialog()">取消</button>
+                <button class="btn-save" onclick="saveNodeLabel()">保存</button>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
